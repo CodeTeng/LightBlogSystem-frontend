@@ -1,6 +1,7 @@
 # 一款基于SpringBoot2 + Vue2/3 的轻博客系统
 
 主要包含了用户管理子系统、博文管理子系统、数据分析和可视化子系统三个模块。
+本部分代码为系统的前端代码，后端代码地址为：https://github.com/CodeTeng/LightBlogSystem-backend
 
 ## 接口文档
 
