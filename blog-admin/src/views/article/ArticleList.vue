@@ -159,6 +159,18 @@
             @change="changeTopAndFeatured(scope.row)" />
         </template>
       </el-table-column>
+      <el-table-column prop="review" label="审核" width="100" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.review"
+            :disabled="scope.row.isDelete == 1"
+            :active-value="1"
+            :inactive-value="0"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="changeAudit(scope.row)" />
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" width="150">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="editArticle(scope.row.id)" v-if="scope.row.isDelete == 0">
@@ -258,6 +270,7 @@ export default {
       categories: [],
       tags: [],
       keywords: null,
+      review: null,
       type: null,
       categoryId: null,
       tagId: null,
@@ -415,6 +428,24 @@ export default {
       this.current = 1
       this.activeStatus = status
     },
+    changeAudit(article){
+      this.axios.post('/api/admin/articles/review',{
+        articleId:article.id,
+        review:article.review
+      }).then(({data})=>{
+        if (data.flag) {
+          this.$notify.success({
+            title: '成功',
+            message: '修改成功'
+          })
+        } else {
+          this.$notify.error({
+            title: '失败',
+            message: data.message
+          })
+        }
+      })
+    },
     changeTopAndFeatured(article) {
       this.axios
         .put('/api/admin/articles/topAndFeatured', {
@@ -447,12 +478,14 @@ export default {
             categoryId: this.categoryId,
             status: this.status,
             tagId: this.tagId,
+            review:this.review,
             type: this.type,
             isDelete: this.isDelete
           }
         })
         .then(({ data }) => {
           this.articles = data.data.records
+          console.log(this.articles)
           this.count = data.data.count
           this.loading = false
         })
