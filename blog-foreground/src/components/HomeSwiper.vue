@@ -4,8 +4,9 @@
       -->
   <div class="inverted-main-grid py-8 gap-8 box-border main-grid">
     <swiper
+      :loop="true"
       :autoplay = "{
-         pauseOnMouseEnter: true,
+         pauseOnMouseEnter: false,
          delay: 4000,
         }"
       :pagination="{
@@ -30,7 +31,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
-import { Pagination,Autoplay  } from 'swiper/modules';
+import { Pagination,Autoplay,  } from 'swiper/modules';
 import { onMounted, ref } from 'vue'
 import api from '@/api/api'
 
@@ -51,7 +52,7 @@ onMounted(()=>{
 <style scoped lang="scss">
 .homeSwiper{
   width: auto;
-  height: 600px;
+  height: 700px;
   background-color: #ffffff;
 }
 </style>
