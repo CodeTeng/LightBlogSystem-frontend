@@ -56,15 +56,15 @@
           :page="pagination.current"
           @pageChange="pageChangeHanlder" />
       </div>
-      <div>
-        <Sidebar>
-          <Profile />
-          <RecentComment v-if="true" />
-          <TagBox />
-          <Notice />
-          <WebsiteInfo />
-        </Sidebar>
-      </div>
+<!--      <div>-->
+<!--        <Sidebar>-->
+<!--          <Profile />-->
+<!--          <RecentComment v-if="true" />-->
+<!--          <TagBox />-->
+<!--          <Notice />-->
+<!--          <WebsiteInfo />-->
+<!--        </Sidebar>-->
+<!--      </div>-->
     </div>
   </div>
 </template>
@@ -276,6 +276,12 @@ export default defineComponent({
     .article-footer {
       margin-top: 13px;
     }
+  }
+}
+.main-grid{
+ display: block;
+  .article-container{
+    height: 430px;
   }
 }
 </style>

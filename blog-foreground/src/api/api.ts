@@ -1,6 +1,11 @@
 import axios from 'axios'
 
 export default {
+
+  // 获得所有的轮播图
+  getAllCarousels: ()=>{
+    return axios.get('/api/carousels/all')
+  },
   getTopAndFeaturedArticles: () => {
     return axios.get('/api/articles/topAndFeatured')
   },

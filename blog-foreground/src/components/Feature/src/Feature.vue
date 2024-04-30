@@ -1,16 +1,17 @@
 <template>
   <div id="feature">
-    <horizontal-article class="home-horizontal-article" />
+    <HomeSwiper class="home-horizontal-article" />
     <slot />
   </div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-import HorizontalArticle from '@/components/ArticleCard/src/HorizontalArticle.vue'
+import HomeSwiper from '@/components/HomeSwiper.vue'
+
 
 export default defineComponent({
   name: 'Feature',
-  components: { HorizontalArticle },
+  components: { HomeSwiper },
   setup() {
     return {}
   }
