@@ -36,7 +36,7 @@
   "settings": {
     "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     "articles": "Articles",
-    "talks": "talks",
+    "talks": "Talks",
     "categories": "Categories",
     "tags": "Tags",
     "words": "Words",
@@ -74,6 +74,7 @@
     "logout":"Logout",
     "personal-center":"Personal Center",
     "running-time":"Running Time",
-    "view-count":"View Count"
+    "view-count":"View Count",
+    "messages": "Messages"
   }
 }

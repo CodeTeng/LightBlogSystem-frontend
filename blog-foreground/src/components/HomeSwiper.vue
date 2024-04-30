@@ -6,7 +6,7 @@
     <swiper
       :autoplay = "{
          pauseOnMouseEnter: true,
-         delay: 2000,
+         delay: 4000,
         }"
       :pagination="{
       dynamicBullets: true,

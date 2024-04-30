@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col">
-    <div class="main-grid">
+    <div class="main-grid article_main">
       <div class="post-header">
         <span class="post-labels">
           <ob-skeleton v-if="loading" tag="b" height="20px" width="35px" />
@@ -486,5 +486,8 @@ export default defineComponent({
 <style lang="scss" scoped>
 .my-gap {
   gap: 1rem;
+}
+.main-grid{
+  display: grid;
 }
 </style>
