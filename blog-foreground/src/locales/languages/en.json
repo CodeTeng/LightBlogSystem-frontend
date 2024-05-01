@@ -31,7 +31,8 @@
     "comment": "Comments",
     "recent_comment": "Recent Comments",
     "website_info": "Website Info",
-    "notice":"Notice"
+    "notice":"Notice",
+    "rate":"Score for article"
   },
   "settings": {
     "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],

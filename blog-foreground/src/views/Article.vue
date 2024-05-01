@@ -123,11 +123,12 @@
             <Profile ref="profile" />
             <div id="sticky-sidebar">
               <transition name="fade-slide-y" mode="out-in">
-                <div class="sidebar-box mb-4">
+                <div class="sidebar-box mb-4 ">
                   <SubTitle :title="'titles.toc'" icon="toc" />
                   <div id="toc1"></div>
                 </div>
               </transition>
+              <Rate ref="rateChild"/>
               <Navigator />
             </div>
           </Sticky>
@@ -138,7 +139,7 @@
 </template>
 
 <script lang="ts">
-import { Sidebar, Profile, Navigator } from '@/components/Sidebar'
+import { Sidebar, Profile, Navigator, Rate } from '@/components/Sidebar'
 import {
   computed,
   defineComponent,
@@ -169,8 +170,9 @@ import markdownToHtml from '@/utils/markdown'
 
 export default defineComponent({
   name: 'Article',
-  components: { Sidebar, Comment, SubTitle, ArticleCard, Profile, Sticky, Navigator },
+  components: { Sidebar, Comment, SubTitle, ArticleCard, Profile, Sticky, Navigator,Rate },
   setup() {
+    const rateChild = ref<InstanceType<typeof Rate>>();
     const profile = ref<InstanceType<typeof Profile>>();
     const proxy: any = getCurrentInstance()?.appContext.config.globalProperties
     const commonStore = useCommonStore()
@@ -200,6 +202,7 @@ export default defineComponent({
     commentStore.type = 1
     onMounted(() => {
       reactiveData.articleId = route.params.articleId
+      rateChild.value?.updateScore(reactiveData.articleId)
       toPageTop()
       fetchArticle()
       fetchComments()
@@ -210,6 +213,7 @@ export default defineComponent({
       tocbot.destroy()
     })
     onBeforeRouteUpdate((to) => {
+      rateChild.value?.updateScore(to.params.articleId);
       reactiveData.article = ''
       reactiveData.readTime = ''
       reactiveData.wordNum = ''
@@ -379,6 +383,7 @@ export default defineComponent({
       handleAuthorClick,
       loading,
       profile,
+      rateChild,
       t
     }
   }
@@ -390,7 +395,7 @@ export default defineComponent({
   word-break: break-all;
 }
 #toc1 {
-  max-height: 470px;
+  max-height: 350px;
   overflow: hidden scroll;
 }
 #toc1 > ol {

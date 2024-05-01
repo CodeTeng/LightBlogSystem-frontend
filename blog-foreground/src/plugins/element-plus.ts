@@ -14,7 +14,8 @@ import {
   ElSwitch,
   ElButton,
   ElDialog,
-  ElSelect
+  ElSelect,
+  ElRate
 } from 'element-plus'
 export const components: any[] = [
   ElNotification,
@@ -32,7 +33,8 @@ export const components: any[] = [
   ElSwitch,
   ElButton,
   ElDialog,
-  ElSelect
+  ElSelect,
+  ElRate
 ]
 export const plugins: any[] = [
   ElNotification,
@@ -50,5 +52,6 @@ export const plugins: any[] = [
   ElSwitch,
   ElButton,
   ElDialog,
-  ElSelect
+  ElSelect,
+  ElRate
 ]

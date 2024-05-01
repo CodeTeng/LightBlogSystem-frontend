@@ -1,6 +1,14 @@
 import axios from 'axios'
 import {Ref} from 'vue'
 export default {
+  // 获得登录用户对文章的评分
+  getArticleScore:(articleId: any)=>{
+    return axios.get('/api/articles/score/'+articleId)
+  },
+  // 添加用户对文章的评分
+  setArticleScore:(data:any)=>{
+    return axios.post('/api/articles/score',data)
+  },
   // 获得用户展示框的信息
   getUserShowById: (id: any) => {
     return axios.get("/api/users/show/"+id)
