@@ -1,8 +1,5 @@
 <template>
-  <!--    @swiper="onSwiper"
-      @slideChange="onSlideChange"
-      -->
-  <div class="inverted-main-grid py-8 gap-8 box-border main-grid">
+  <div class="main-block py-8 gap-8 box-border">
     <swiper
       :loop="true"
       :autoplay = "{

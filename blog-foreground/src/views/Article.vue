@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col">
-    <div class="main-grid article_main">
+    <div class="main-grid">
       <div class="post-header">
         <span class="post-labels">
           <ob-skeleton v-if="loading" tag="b" height="20px" width="35px" />
@@ -128,7 +128,7 @@
                   <div id="toc1"></div>
                 </div>
               </transition>
-              <Rate ref="rateChild"/>
+              <Rate ref="rateChild" v-if="isLogin()"/>
               <Navigator />
             </div>
           </Sticky>
@@ -167,6 +167,7 @@ import emitter from '@/utils/mitt'
 import { v3ImgPreviewFn } from 'v3-img-preview'
 import api from '@/api/api'
 import markdownToHtml from '@/utils/markdown'
+import { useUserStore } from '@/stores/user'
 
 export default defineComponent({
   name: 'Article',
@@ -177,6 +178,7 @@ export default defineComponent({
     const proxy: any = getCurrentInstance()?.appContext.config.globalProperties
     const commonStore = useCommonStore()
     const commentStore = useCommentStore()
+    const userStore = useUserStore()
     const route = useRoute()
     const router = useRouter()
     const { t } = useI18n()
@@ -199,6 +201,9 @@ export default defineComponent({
       current: 1,
       size: 7
     })
+    const isLogin = ()=>{
+      return userStore.token != '';
+    }
     commentStore.type = 1
     onMounted(() => {
       reactiveData.articleId = route.params.articleId
@@ -384,6 +389,7 @@ export default defineComponent({
       loading,
       profile,
       rateChild,
+      isLogin,
       t
     }
   }
@@ -475,6 +481,7 @@ export default defineComponent({
   }
 }
 .pre-and-next-article {
+  height: 400px;
   .article-content {
     p {
       overflow: hidden;
@@ -498,8 +505,5 @@ export default defineComponent({
 <style lang="scss" scoped>
 .my-gap {
   gap: 1rem;
-}
-.main-grid{
-  display: grid;
 }
 </style>
