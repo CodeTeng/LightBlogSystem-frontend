@@ -47,7 +47,7 @@ const send = async () => {
       <div class="post-header">
         <h1 class="post-title text-white uppercase">{{ t('titles.smartAi') }}</h1>
       </div>
-      <div class="main-grid">
+      <div class="main-block">
         <div class="relative">
           <div class="post-html">
             <div class="dashboard-content">
@@ -100,11 +100,11 @@ const send = async () => {
             </div>
           </div>
         </div>
-        <div class="col-span-1">
-          <Sidebar>
-            <Profile />
-          </Sidebar>
-        </div>
+<!--        <div class="col-span-1">-->
+<!--          <Sidebar>-->
+<!--            <Profile />-->
+<!--          </Sidebar>-->
+<!--        </div>-->
       </div>
     </div>
   </div>
