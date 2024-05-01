@@ -23,15 +23,6 @@ export default {
       children: []
     },
     {
-      name: 'About',
-      path: '/about',
-      i18n: {
-        cn: '关于',
-        en: 'About'
-      },
-      children: []
-    },
-    {
       name: 'Archives',
       path: '/archives',
       i18n: {
@@ -41,11 +32,11 @@ export default {
       children: []
     },
     {
-      name: 'Tags',
-      path: '/tags',
+      name: 'Articles',
+      path: '/articles',
       i18n: {
-        cn: '标签',
-        en: 'Tags'
+        cn: '文章',
+        en: 'Articles'
       },
       children: []
     },
@@ -73,6 +64,15 @@ export default {
       i18n: {
         cn: '智能小助手',
         en: 'Smart Assistant'
+      },
+      children: []
+    },
+    {
+      name: 'TalkEdit',
+      path: '/talks-edit',
+      i18n: {
+        cn: '编辑说说',
+        en: 'Edit Talk'
       },
       children: []
     }

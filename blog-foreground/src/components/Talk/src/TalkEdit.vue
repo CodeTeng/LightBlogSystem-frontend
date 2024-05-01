@@ -13,14 +13,14 @@
       />
       <div class="operation-wrapper">
         <div class="right-wrapper">
-          <el-switch
-            style="margin-right: 16px"
-            v-model="talk.isTop"
-            inactive-text="置顶"
-            :active-value="1"
-            :inactive-value="0" />
+<!--          <el-switch-->
+<!--            style="margin-right: 16px"-->
+<!--            v-model="isTopValue"-->
+<!--            inactive-text="置顶"-->
+<!--            :active-value="1"-->
+<!--            :inactive-value="0" />-->
           <el-select
-            v-model="talk.status"
+            v-model="statusValue"
             style="width: 100px;height: 50px"
             class="mr-4 bg-blue-50"
           >
@@ -44,7 +44,9 @@
         :headers="headers"
         :file-list="uploads"
         :before-upload="beforeUpload"
-        :on-success="upload">
+        :on-success="upload"
+        :on-remove="handleRemove"
+      >
         <i class="el-icon-plus" />
       </el-upload>
     </div>
@@ -59,18 +61,6 @@ export default {
   name:'TalkEdit',
   components: {
     Editor
-  },
-  created() {
-    if (this.$route.params.talkId!=null) {
-      api.getTalkById(this.$route.params.talkId).then(({ data }) => {
-        this.talk = data.data
-        if (data.data.imgs) {
-          data.data.imgs.forEach((item) => {
-            this.uploads.push({ url: item })
-          })
-        }
-      })
-    }
   },
   data() {
     return {
@@ -87,10 +77,48 @@ export default {
       ],
       uploads: [],
       headers: { Authorization: 'Bearer ' + sessionStorage.getItem('token') },
-      contentValue:''
+      contentValue:'',
+      statusValue:1,
+      isTopValue: 0,
+
     }
   },
+  mounted() {
+    this.initGetTalk()
+  },
   methods: {
+    handleRemove(file) {
+      this.uploads.forEach((item, index) => {
+        if (item.url == file.url) {
+          this.uploads.splice(index, 1)
+        }
+      })
+    },
+    upload(response) {
+      this.uploads.push({ url: response.data })
+      this.uploads.forEach((item, index) => {
+        if (item.response!=null) {
+          this.uploads.splice(index, 1)
+        }
+      })
+    },
+    initGetTalk(){
+      if (this.$route.query.talkId!=null) {
+        api.getTalkById(this.$route.query.talkId).then(({ data }) => {
+          console.log(data.data)
+          this.talk.id = data.data.id
+          this.contentValue = data.data.content
+          this.talk.images = data.data.images
+          this.statusValue = data.data.status==null?1:data.data.status
+          this.isTopValue = data.data.isTop
+          if (data.data.imgs) {
+            data.data.imgs.forEach((item) => {
+              this.uploads.push({ url: item })
+            })
+          }
+        })
+      }
+    },
     beforeUpload(file) {
       return new Promise((resolve) => {
         if (file.size / 1024 < 200) {
@@ -103,6 +131,8 @@ export default {
     },
     saveOrUpdateTalk() {
       this.talk.content = this.contentValue
+      this.talk.status =this.statusValue
+      this.talk.isTopValue = this.isTopValue
       if (this.talk.content.trim() === '') {
         this.$notify.error('说说内容不能为空')
         return false
@@ -110,7 +140,7 @@ export default {
       if (this.uploads.length > 0) {
         var img = []
         this.uploads.forEach((item) => {
-          img.push(item.response.data)
+          img.push(item.url)
         })
         this.talk.images = JSON.stringify(img)
       } else {

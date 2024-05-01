@@ -7,13 +7,14 @@
       </div>
       <div class="main-grid">
         <div class="relative space-y-5">
+          <!--  talk循环体  -->
           <div
             class="bg-ob-deep-800 flex p-4 lg:p-8 rounded-2xl shadow-xl mb-0 talk-item"
             v-for="item in talks"
             :key="item.id"
-            @click="toTalk(item.id)">
-            <Avatar :url="item.avatar" />
-            <div class="talk-info">
+            >
+            <Avatar :url="item.avatar" @click="toTalk(item.id)" />
+            <div class="talk-info" @click="toTalk(item.id)">
               <div class="user-nickname text-sm">
                 {{ item.nickname }}
               </div>
@@ -29,6 +30,7 @@
                   item.commentCount == null ? 0 : item.commentCount
                 }}
               </div>
+
               <div class="talk-content" v-html="item.content" />
               <el-row class="talk-images" v-if="item.imgs">
                 <el-col :md="4" v-for="(img, index) of item.imgs" :key="index">
@@ -41,7 +43,11 @@
                 </el-col>
               </el-row>
             </div>
+            <div class="float-right" v-if="isLogin()">
+              <svg-icon class="inline-block text-3xl" icon-class="edit" @click="editTalk(item.id)"/>
+            </div>
           </div>
+
           <Paginator
             :pageSize="pagination.size"
             :pageTotal="pagination.total"
@@ -80,6 +86,18 @@ export default defineComponent({
     const userStore = useUserStore()
     const userId = ref('')
     const isLoginUser = ref(false)
+
+    const editTalk = (talkId:any)=>{
+      router.push({
+        path: `/talk-edit`,
+        query:{talkId:talkId}
+      })
+    }
+
+    const isLogin = ()=>{
+      if(userStore.userInfo==='') return false;
+      return userStore.userInfo.userInfoId === userId.value
+    }
 
     const pagination = reactive({
       size: 7,
@@ -151,6 +169,8 @@ export default defineComponent({
       userId,
       profileRef,
       isLoginUser,
+      editTalk,
+      isLogin,
       t
     }
   }
