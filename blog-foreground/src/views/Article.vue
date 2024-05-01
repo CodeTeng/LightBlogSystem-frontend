@@ -119,8 +119,8 @@
       </div>
       <div>
         <Sidebar>
-          <Profile />
           <Sticky :stickyTop="32" endingElId="footer" dynamicElClass="#sticky-sidebar">
+            <Profile ref="profile" />
             <div id="sticky-sidebar">
               <transition name="fade-slide-y" mode="out-in">
                 <div class="sidebar-box mb-4">
@@ -171,6 +171,7 @@ export default defineComponent({
   name: 'Article',
   components: { Sidebar, Comment, SubTitle, ArticleCard, Profile, Sticky, Navigator },
   setup() {
+    const profile = ref<InstanceType<typeof Profile>>();
     const proxy: any = getCurrentInstance()?.appContext.config.globalProperties
     const commonStore = useCommonStore()
     const commentStore = useCommentStore()
@@ -180,6 +181,7 @@ export default defineComponent({
     const loading = ref(true)
     const articleRef = ref()
     const reactiveData = reactive({
+      userId: '' as any,
       articleId: '' as any,
       article: '' as any,
       wordNum: '' as any,
@@ -291,6 +293,10 @@ export default defineComponent({
           return
         }
         commonStore.setHeaderImage(data.data.articleCover)
+
+        reactiveData.userId = data.data.author.id
+        console.log(data.data)
+        profile.value?.initUserInfo(data.data.author.id)
         new Promise((resolve) => {
           data.data.articleContent = markdownToHtml(data.data.articleContent)
           resolve(data.data)
@@ -372,6 +378,7 @@ export default defineComponent({
       isMobile: computed(() => commonStore.isMobile),
       handleAuthorClick,
       loading,
+      profile,
       t
     }
   }

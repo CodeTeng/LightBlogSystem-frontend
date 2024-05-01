@@ -1,7 +1,10 @@
 import axios from 'axios'
-
+import {Ref} from 'vue'
 export default {
-
+  // 获得用户展示框的信息
+  getUserShowById: (id: any) => {
+    return axios.get("/api/users/show/"+id)
+  },
   // 获得所有的轮播图
   getAllCarousels: ()=>{
     return axios.get('/api/carousels/all')
