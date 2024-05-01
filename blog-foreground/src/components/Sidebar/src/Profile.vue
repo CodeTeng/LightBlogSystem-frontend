@@ -26,7 +26,7 @@
         </div>
 
         <div class="h-full w-full flex flex-col flex-1 justify-end items-end">
-          <Social />
+<!--          <Social />-->
           <ul class="grid grid-cols-3 pt-4 w-full px-2 text-lg">
             <router-link :to="{path:'/articles/list',query: {userId: userId}}">
               <li class="col-span-1 text-center">
@@ -86,8 +86,8 @@ export default defineComponent({
           nickName.value = userInfo.nickName==null?"":userInfo.nickName
           userIntro.value = userInfo.userIntro==null?"":userInfo.userIntro
           messageCount.value = userInfo.messageCount==null?0:userInfo.messageCount
-          articleCount.value = userInfo.articleCount==null?0:userInfo.messageCount
-          talkCount.value = userInfo.talkCount==null?0:userInfo.messageCount
+          articleCount.value = userInfo.articlesCount==null?0:userInfo.articlesCount
+          talkCount.value = userInfo.talksCount==null?0:userInfo.talksCount
         }
       })
     }
