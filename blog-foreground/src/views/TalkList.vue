@@ -50,7 +50,7 @@
         </div>
         <div class="col-span-1">
           <Sidebar>
-            <Profile />
+            <Profile ref="profileRef"/>
           </Sidebar>
         </div>
       </div>
@@ -59,22 +59,28 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, toRefs } from 'vue'
+import { defineComponent, onMounted, reactive, ref, toRefs ,onBeforeUpdate} from 'vue'
 import { useI18n } from 'vue-i18n'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import { Sidebar, Profile } from '../components/Sidebar'
 import Paginator from '@/components/Paginator.vue'
 import Avatar from '../components/Avatar.vue'
 import { v3ImgPreviewFn } from 'v3-img-preview'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '@/api/api'
+import { useUserStore } from '@/stores/user'
 
 export default defineComponent({
   name: 'talkList',
   components: { Breadcrumb, Sidebar, Profile, Paginator, Avatar },
   setup() {
+    const profileRef = ref<InstanceType<typeof Profile>>();
     const { t } = useI18n()
     const router = useRouter()
+    const userStore = useUserStore()
+    const userId = ref('')
+    const isLoginUser = ref(false)
+
     const pagination = reactive({
       size: 7,
       total: 0,
@@ -85,17 +91,27 @@ export default defineComponent({
       talks: '' as any
     })
     onMounted(() => {
+      if(userStore.talksUserId == userStore.userInfo.userInfoId){
+        userId.value = userStore.userInfo.userInfoId
+        isLoginUser.value = true
+      }else{
+        userId.value = userStore.talksUserId
+        isLoginUser.value = true
+      }
+      profileRef.value?.initUserInfo(userId.value)
       fetchTalks()
     })
     const handlePreview = (index: any) => {
       v3ImgPreviewFn({ images: reactiveData.images, index: reactiveData.images.indexOf(index) })
     }
+    // 加载说说列表
     const fetchTalks = () => {
       const params = {
         current: pagination.current,
-        size: pagination.size
+        size: pagination.size,
+        userId: userId.value
       }
-      api.getTalks(params).then(({ data }) => {
+      api.getUserTalksById(params).then(({ data }) => {
         reactiveData.talks = data.data.records
         pagination.total = data.data.count
         reactiveData.talks.forEach((item: any) => {
@@ -132,6 +148,9 @@ export default defineComponent({
       pageChangeHanlder,
       handlePreview,
       toTalk,
+      userId,
+      profileRef,
+      isLoginUser,
       t
     }
   }

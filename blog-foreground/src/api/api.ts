@@ -1,6 +1,10 @@
 import axios from 'axios'
 import {Ref} from 'vue'
 export default {
+  // 保存或修改文章
+  saveOrUpdateTalk:(data:any)=>{
+    return axios.post('/api/talks',data)
+  },
   // 获得登录用户对文章的评分
   getArticleScore:(articleId: any)=>{
     return axios.get('/api/articles/score/'+articleId)
@@ -113,6 +117,10 @@ export default {
   },
   getTalkById: (id: any) => {
     return axios.get('/api/talks/' + id)
+  },
+  // 获得用户的说说
+  getUserTalksById: (params: any) => {
+    return axios.get('/api/talks/list/' + params.userId,params)
   },
   logout: () => {
     return axios.post('/api/users/logout')

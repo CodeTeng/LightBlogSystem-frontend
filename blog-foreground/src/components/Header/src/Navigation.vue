@@ -1,6 +1,7 @@
 <template>
   <nav class="items-center flex-1 hidden lg:flex">
     <ul class="flex flex-row list-none px-6 text-white">
+      <!--  头部导航   -->
       <li
         class="not-italic font-medium text-xs h-full relative flex flex-col items-center justify-center cursor-pointer text-center py-4 px-2"
         v-for="route in routes"
@@ -43,6 +44,8 @@
           </DropdownMenu>
         </Dropdown>
       </li>
+
+      <!--  相册  -->
       <li
         class="not-italic font-medium text-xs h-full relative flex flex-col items-center justify-center cursor-pointer text-center py-4 px-2"
         data-menu="PhotoAlbums">
@@ -64,13 +67,14 @@
 
 <script lang="ts">
 // @ts-nocheck
-import { defineComponent, onMounted, reactive, toRef, toRefs } from 'vue'
+import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Dropdown, DropdownMenu, DropdownItem } from '@/components/Dropdown'
 import { isExternal } from '@/utils/validate'
 import config from '@/config/config'
 import api from '@/api/api'
+import { useUserStore } from '@/stores/user'
 
 export default defineComponent({
   name: 'Navigation',
@@ -78,11 +82,15 @@ export default defineComponent({
   setup() {
     const { t, te } = useI18n()
     const router = useRouter()
+    const userStore = useUserStore()
     const pushPage = (path: string): void => {
       if (!path) return
       if (isExternal(path)) {
         window.location.href = path
       } else {
+        if(path=='/talks'){
+          userStore.talksUserId = userStore.userInfo.userInfoId
+        }
         router.push({
           path: path
         })

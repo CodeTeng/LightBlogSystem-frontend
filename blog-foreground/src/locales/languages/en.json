@@ -76,6 +76,8 @@
     "personal-center":"Personal Center",
     "running-time":"Running Time",
     "view-count":"View Count",
-    "messages": "Messages"
+    "messages": "Messages",
+    "article-add": "Pub Article",
+    "talk-add": "Pub Talk"
   }
 }

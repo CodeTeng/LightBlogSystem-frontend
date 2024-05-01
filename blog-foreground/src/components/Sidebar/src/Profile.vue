@@ -28,7 +28,7 @@
         <div class="h-full w-full flex flex-col flex-1 justify-end items-end">
 <!--          <Social />-->
           <ul class="grid grid-cols-3 pt-4 w-full px-2 text-lg">
-            <router-link :to="{path:'/articles/list',query: {userId: userId}}">
+            <router-link  @click="pushRoute('/article-list')" to="">
               <li class="col-span-1 text-center">
               <span class="text-ob-bright">
                 {{ articleCount }}
@@ -36,13 +36,13 @@
                 <p class="text-base">{{ t('settings.articles') }}</p>
               </li>
             </router-link>
-            <router-link :to="{path:'/talks',query: {userId: userId}}">
+            <router-link @click="pushRoute('/talks')" to="">
               <li class="col-span-1 text-center">
                 <span class="text-ob-bright">{{ talkCount }}</span>
                 <p class="text-base">{{ t('settings.talks') }}</p>
               </li>
             </router-link>
-            <router-link :to="{path:'/message',query: {userId: userId}}">
+            <router-link @click="pushRoute('/messages')" to="">
               <li class="col-span-1 text-center">
                 <span class="text-ob-bright"> {{ messageCount }}</span>
                 <p class="text-base">{{ t('settings.messages') }}</p>
@@ -61,10 +61,12 @@ import { computed, defineComponent, defineExpose, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Social from '@/components/Social.vue'
 import api from '@/api/api'
+import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
 export default defineComponent({
   name: 'Profile',
   components: { Social },
-  setup(props) {
+  setup() {
     const appStore = useAppStore()
     const { t } = useI18n()
     const userId = ref('')
@@ -74,6 +76,15 @@ export default defineComponent({
     const messageCount = ref(0) // 留言数量
     const articleCount = ref(0) // 文章数量
     const talkCount = ref(0) // 说说数量
+    const userStore = useUserStore()
+    const router = useRouter()
+
+    const pushRoute = (path: string) => {
+      if(path === '/talks') {
+        userStore.talksUserId = userId.value
+      }
+      router.push(path)
+    }
 
     const initUserInfo = async (id:any)=>{
       userId.value = id
@@ -113,8 +124,9 @@ export default defineComponent({
       nickName,
       avatar,
       userIntro,
-      userId,
       initUserInfo,
+      pushRoute,
+      userId,
       t
     }
   }

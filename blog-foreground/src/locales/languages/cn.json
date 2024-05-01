@@ -76,6 +76,8 @@
     "personal-center":"个人中心",
     "running-time":"运行时间",
     "view-count":"总访问量",
-    "messages": "留言"
+    "messages": "留言",
+    "article-add": "发布文章",
+    "talk-add": "发布说说"
   }
 }

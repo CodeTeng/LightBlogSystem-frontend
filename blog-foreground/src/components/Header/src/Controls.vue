@@ -30,6 +30,8 @@
           <template v-if="!isMobile">
             <DropdownItem @click="openUserCenter">{{ t('settings.personal-center') }}</DropdownItem>
           </template>
+          <DropdownItem @click="pushPath('/article-edit')">{{ t('settings.article-add') }}</DropdownItem>
+          <DropdownItem @click="pushPath('/talk-edit')">{{ t('settings.talk-add') }}</DropdownItem>
           <DropdownItem @click="logout">{{ t('settings.logout') }}</DropdownItem>
         </DropdownMenu>
       </Dropdown>
@@ -38,6 +40,9 @@
       <ThemeToggle />
     </span>
   </div>
+
+
+  <!-- 登录，注册，忘记密码，文章密码表单 -->
   <el-dialog v-model="loginDialogVisible" width="30%" :fullscreen="isMobile">
     <el-form @keyup.enter.native="login">
       <el-form-item model="userInfo" class="mt-5">
@@ -158,6 +163,10 @@ export default defineComponent({
     const searchStore = useSearchStore()
     const route = useRoute()
     const router = useRouter()
+
+    const pushPath = (path:string)=>{
+      router.push(path)
+    }
     const loginInfo = reactive({
       username: '' as any,
       password: '' as any,
@@ -354,6 +363,7 @@ export default defineComponent({
       updatePassword,
       openForgetPasswordDialog,
       accessArticle,
+      pushPath,
       multiLanguage: computed(() => {
         let websiteConfig: any = appStore.websiteConfig
         return websiteConfig.multiLanguage
