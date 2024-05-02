@@ -156,8 +156,9 @@ export default {
   created() {
     const articleId = this.$route.query.articleId
     if (articleId) {
-      api.getArticleById(articleId).then(({ data }) => {
+      api.getArticleEditById(articleId).then(({ data }) => {
         this.article = data.data
+        console.log(this.article)
       })
     } else {
       const article = sessionStorage.getItem('article')

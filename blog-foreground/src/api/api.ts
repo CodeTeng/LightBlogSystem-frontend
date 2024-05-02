@@ -41,6 +41,10 @@ export default {
   getArticleById: (articleId: any) => {
     return axios.get('/api/articles/' + articleId)
   },
+  // 获得文章编辑的信息
+  getArticleEditById: (articleId: any) => {
+    return axios.get('/api/articles/edit/' + articleId)
+  },
   getAllCategories: () => {
     return axios.get('/api/categories/all')
   },
@@ -60,6 +64,9 @@ export default {
   },
   getArticlesByTagId: (params: any) => {
     return axios.get('/api/articles/tagId', { params: params })
+  },
+  listArticlesByUserId: (params: any) => {
+    return axios.get('/api/articles/list/'+params.userId, { params: params })
   },
   getAllArchives: (params: any) => {
     return axios.get('/api/archives/all', { params: params })
@@ -136,7 +143,7 @@ export default {
   },
   // 获得用户的说说
   getUserTalksById: (params: any) => {
-    return axios.get('/api/talks/list/' + params.userId,params)
+    return axios.get('/api/talks/list',{params:params})
   },
   logout: () => {
     return axios.post('/api/users/logout')

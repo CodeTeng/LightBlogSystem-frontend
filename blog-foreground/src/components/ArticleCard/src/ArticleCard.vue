@@ -5,7 +5,7 @@
         <svg-icon icon-class="pin" />
         {{ t('settings.pinned') }}
       </b>
-    </span>
+    </span >
     <span v-else-if="article.isFeatured" class="article-tag">
       <b>
         <svg-icon icon-class="hot" />
@@ -13,6 +13,7 @@
       </b>
     </span>
     <div class="article">
+
       <div class="article-thumbnail">
         <img v-if="article.articleCover" v-lazy="article.articleCover" alt="" />
         <img v-else src="@/assets/default-cover.jpg" />
@@ -74,27 +75,92 @@
           </div>
         </div>
       </div>
+      <el-popover
+        placement="top-start"
+        title="文章信息:点击可编辑"
+        :width="200"
+        trigger="hover"
+        v-if="isLoginUser!=null&&isShow!=null&&isLoginUser&&isShow"
+      >
+        <template #reference>
+          <el-button  :icon="Edit"  plain class="mx-auto border-0" text @click.stop="editArticle"/>
+        </template>
+        <el-tag type='primary'> 文章状态：{{getPopoverContent(article).statusStr }} </el-tag>
+        <el-tag type='success'> 文章类型：{{getPopoverContent(article).typeStr}}</el-tag>
+        <el-tag type='info'> 审核状态：{{getPopoverContent(article).reviewStr}}</el-tag>
+      </el-popover>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, toRefs, getCurrentInstance } from 'vue'
+import { computed, defineComponent, getCurrentInstance, toRefs } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import emitter from '@/utils/mitt'
+import SvgIcon from '@/components/SvgIcon/index.vue'
+import { Edit } from '@element-plus/icons-vue'
 
 export default defineComponent({
   name: 'ArticleCard',
-  props: ['data'],
+  components: { SvgIcon ,Edit},
+  props: ['data','isLoginUser','isShow'],
   setup(props) {
     const proxy: any = getCurrentInstance()?.appContext.config.globalProperties
     const appStore = useAppStore()
     const userStore = useUserStore()
     const router = useRouter()
     const { t } = useI18n()
+
+    const article = toRefs(props).data
+
+    const editArticle = ()=>{
+      router.push({
+        path:"/article-edit",
+        query:{articleId:article.value.id}
+      })
+    }
+
+    const getPopoverContent = (article:any)=>{
+      const content = {
+        statusStr:'',
+        typeStr:'',
+        reviewStr:''
+      }
+      switch(article.status){
+        case 1:
+          content.statusStr = '公开'
+          break
+        case 2:
+          content.statusStr = '私密'
+          break
+        case 3:
+          content.statusStr = '草稿'
+          break
+      }
+      switch(article.type){
+        case 1:
+          content.typeStr = '原创'
+          break
+        case 2:
+          content.typeStr = '转载'
+          break
+        case 3:
+          content.typeStr = '翻译'
+          break
+      }
+      switch(article.review){
+        case 0:
+          content.reviewStr = '未审核'
+          break
+        case 1:
+          content.reviewStr = '已审核'
+          break
+      }
+      return content;
+    }
     const handleAuthorClick = (link: string) => {
       if (link === '') link = window.location.href
       window.open(link)
@@ -124,10 +190,16 @@ export default defineComponent({
       gradientBackground: computed(() => {
         return { background: appStore.themeConfig.header_gradient_css }
       }),
-      article: toRefs(props).data,
+      article,
       handleAuthorClick,
       toArticle,
-      t
+      isLoginUser:toRefs(props).isLoginUser,
+      isShow: toRefs(props).isShow.value,
+      t,
+      Edit,
+      getPopoverContent,
+      editArticle,
+      router
     }
   }
 })

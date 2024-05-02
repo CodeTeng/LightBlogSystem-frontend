@@ -1,62 +1,87 @@
 <template>
   <div class="flex flex-col">
     <div class="post-header">
-      <h1 class="post-title text-white uppercase">{{ tagName }}</h1>
+      <h1 class="post-title text-white uppercase">文章</h1>
     </div>
-    <div class="bg-ob-deep-800 px-14 py-16 rounded-2xl shadow-xl block min-h-screen">
-      <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
-        <template v-if="haveArticles === true">
-          <li v-for="article in articles" :key="article.id">
-            <ArticleCard class="tag-article" :data="article" />
-          </li>
-        </template>
-        <template v-else>
-          <li v-for="n in 12" :key="n">
-            <ArticleCard :data="{}" />
-          </li>
-        </template>
-      </ul>
-      <Paginator
-        :pageSize="pagination.size"
-        :pageTotal="pagination.total"
-        :page="pagination.current"
-        @pageChange="pageChangeHanlder" />
+    <div class="main-grid">
+      <div class="bg-ob-deep-800 px-14 py-16 rounded-2xl shadow-xl min-h-screen">
+        <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
+          <template v-if="haveArticles === true">
+            <li v-for="article in articles" :key="article.id">
+              <ArticleCard class="user-list-article" :data="article" :is-login-user="isLoginUser" :is-show="true"/>
+            </li>
+          </template>
+          <template v-else>
+            <li v-for="n in 9" :key="n">
+              <ArticleCard :data="{}" />
+            </li>
+          </template>
+        </ul>
+        <Paginator
+          :pageSize="pagination.size"
+          :pageTotal="pagination.total"
+          :page="pagination.current"
+          @pageChange="pageChangeHanlder" />
+      </div>
+      <div class="col-span-1">
+        <Sidebar>
+          <Profile ref="profileRef"/>
+        </Sidebar>
+      </div>
     </div>
+
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, reactive, toRefs } from 'vue'
+import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import { ArticleCard } from '@/components/ArticleCard'
 import Paginator from '@/components/Paginator.vue'
 import { useRoute } from 'vue-router'
 import api from '@/api/api'
 import markdownToHtml from '@/utils/markdown'
+import { useUserStore } from '@/stores/user'
+import { Profile, Sidebar } from '@/components/Sidebar'
 
 export default defineComponent({
   name: 'ArticleList',
-  components: { Breadcrumb, ArticleCard, Paginator },
+  components: { Profile, Sidebar, Breadcrumb, ArticleCard, Paginator },
   setup() {
+    const profileRef = ref<InstanceType<typeof Profile>>();
     const route = useRoute()
+    const userStore = useUserStore()
+
+    const isLoginUser = ()=>{
+      if(route.query.userId==null || route.query.userId == ''){
+        return true
+      }
+      return  userStore.userInfo.userInfoId == route.query.userId
+    }
+
     const pagination = reactive({
-      size: 12,
+      size: 9,
       total: 0,
       current: 1
     })
     const reactiveData = reactive({
       articles: [] as any,
-      tagName: '' as any,
+      userId: '' as any,
       haveArticles: false
     })
     onMounted(() => {
-      reactiveData.tagName = route.query.tagName
+      if(isLoginUser()){
+        reactiveData.userId = userStore.userInfo.userInfoId
+      }else{
+        reactiveData.userId = route.query.userId
+      }
+      profileRef.value?.initUserInfo(reactiveData.userId)
       fetchArticles()
     })
     const fetchArticles = () => {
       reactiveData.haveArticles = false
       api
-        .getArticlesByTagId({
-          tagId: route.params.tagId,
+        .listArticlesByUserId({
+          userId: reactiveData.userId,
           current: pagination.current,
           size: pagination.size
         })
@@ -86,13 +111,16 @@ export default defineComponent({
     return {
       pagination,
       pageChangeHanlder,
-      ...toRefs(reactiveData)
+      ...toRefs(reactiveData),
+      isLoginUser,
+      profileRef
     }
   }
 })
 </script>
 <style lang="scss">
-.tag-article {
+.user-list-article {
+  height: 350px;
   .article-content {
     p {
       overflow: hidden;

@@ -5,7 +5,7 @@
       data-dia="author">
       <div class="profile absolute w-full flex flex-col justify-center items-center">
         <div class="flex flex-col justify-center items-center">
-          <router-link :to="{path:'/user',query: {userId: userId}}">
+          <router-link :to="{path:'/user',params: {userId: userId}}">
             <img v-if="avatar" :class="avatarClass" :src="avatar" />
             <img v-else :class="avatarClass" :src="require('/src/assets/loading.gif')" alt="" />
           </router-link>
@@ -28,7 +28,7 @@
         <div class="h-full w-full flex flex-col flex-1 justify-end items-end">
 <!--          <Social />-->
           <ul class="grid grid-cols-3 pt-4 w-full px-2 text-lg">
-            <router-link  @click="pushRoute('/article-list')" to="">
+            <router-link   :to="{path:'/articles',query: {userId: userId}}">
               <li class="col-span-1 text-center">
               <span class="text-ob-bright">
                 {{ articleCount }}
@@ -42,7 +42,7 @@
                 <p class="text-base">{{ t('settings.talks') }}</p>
               </li>
             </router-link>
-            <router-link @click="pushRoute('/messages')" to="">
+            <router-link :to="{path:'/message',params: {userId: userId}}">
               <li class="col-span-1 text-center">
                 <span class="text-ob-bright"> {{ messageCount }}</span>
                 <p class="text-base">{{ t('settings.messages') }}</p>
