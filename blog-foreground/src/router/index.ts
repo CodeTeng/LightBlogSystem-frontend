@@ -17,6 +17,11 @@ const routes = [
     component: () => import('../views/Article.vue')
   },
   {
+    path: '/article-edit',
+    name: 'ArticleEdit',
+    component: () => import('../components/Article/src/ArticleEdit.vue')
+  },
+  {
     path: '/talks',
     name: 'talkList',
     component: () => import('../views/TalkList.vue')

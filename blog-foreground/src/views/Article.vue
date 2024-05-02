@@ -287,7 +287,7 @@ export default defineComponent({
     }
     const fetchArticle = () => {
       loading.value = true
-      api.getArticeById(reactiveData.articleId).then(({ data }) => {
+      api.getArticleById(reactiveData.articleId).then(({ data }) => {
         if (data.code === 52003) {
           proxy.$notify({
             title: 'Error',

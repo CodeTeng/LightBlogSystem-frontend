@@ -1,0 +1,1 @@
+export { default as ArticleEdit } from './src/ArticleEdit.vue'

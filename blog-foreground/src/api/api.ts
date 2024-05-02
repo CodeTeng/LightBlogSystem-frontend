@@ -1,7 +1,11 @@
 import axios from 'axios'
 import {Ref} from 'vue'
 export default {
-  // 保存或修改文章
+  // 上传图片
+  uploadArticleImages:(fileData:FormData)=>{
+    return axios.post('/api/articles/images',fileData)
+  },
+  // 保存或修改说说
   saveOrUpdateTalk:(data:any)=>{
     return axios.post('/api/talks',data)
   },
@@ -30,17 +34,29 @@ export default {
   getArticlesByCategoryId: (params: any) => {
     return axios.get('/api/articles/categoryId', { params: params })
   },
-  getArticeById: (articleId: any) => {
+  // 保存或更新文章
+  saveOrUpdateArticle: (data: any) => {
+    return axios.post('/api/articles',data)
+  },
+  getArticleById: (articleId: any) => {
     return axios.get('/api/articles/' + articleId)
   },
   getAllCategories: () => {
     return axios.get('/api/categories/all')
+  },
+  // 查询分类
+  listCategoriesBySearch: (params: any) => {
+    return axios.get('/api/categories/search', { params: params })
   },
   getAllTags: () => {
     return axios.get('/api/tags/all')
   },
   getTopTenTags: () => {
     return axios.get('/api/tags/topTen')
+  },
+  // 条件查询标签列表
+  listTagsBySearch:(params: any) => {
+    return axios.get('/api/tags/search', { params: params })
   },
   getArticlesByTagId: (params: any) => {
     return axios.get('/api/articles/tagId', { params: params })
