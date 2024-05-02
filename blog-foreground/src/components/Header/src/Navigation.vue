@@ -9,7 +9,7 @@
         <div
           class="nav-link text-sm block px-1.5 py-0.5 rounded-md relative uppercase cursor-pointer"
           @click="pushPage(route.path)"
-          v-if="route.children && route.children.length === 0"
+          v-if="route.children && route.children.length === 0&&checkPath(route.path)"
           :data-menu="route.name">
           <span class="relative z-50" v-if="$i18n.locale === 'cn' && route.i18n.cn">
             {{ route.i18n.cn }}
@@ -22,7 +22,7 @@
         <Dropdown
           @command="pushPage"
           hover
-          v-else
+          v-else-if="checkPath(route.path)"
           class="nav-link text-sm block px-1.5 py-0.5 rounded-md relative uppercase">
           <span class="relative z-50" v-if="$i18n.locale === 'cn' && route.i18n.cn">
             {{ route.i18n.cn }}
@@ -47,6 +47,7 @@
 
       <!--  相册  -->
       <li
+        v-if="checkPath('/photos')"
         class="not-italic font-medium text-xs h-full relative flex flex-col items-center justify-center cursor-pointer text-center py-4 px-2"
         data-menu="PhotoAlbums">
         <Dropdown hover class="nav-link text-sm block px-1.5 py-0.5 rounded-md relative uppercase">
@@ -107,12 +108,22 @@ export default defineComponent({
     const openPhotoAlbum = (id: any): void => {
       router.push('/photos/' + id)
     }
+    // 返回能直接
+    const checkPath = (path: string): boolean => {
+      const wPath = ["/","/home"]
+      if(userStore.token==null||userStore.token==''){
+        return wPath.includes(path)
+      }
+      return true;
+
+    }
     return {
       ...toRefs(reactiveData),
       routes: config.routes,
       pushPage,
       openPhotoAlbum,
       te,
+      checkPath,
       t
     }
   }

@@ -231,6 +231,7 @@ export default defineComponent({
             message: '登出成功',
             type: 'success'
           })
+          router.replace("/")
         }
       })
     }

@@ -66,15 +66,6 @@ export default {
         en: 'Smart Assistant'
       },
       children: []
-    },
-    {
-      name: 'TalkEdit',
-      path: '/talks-edit',
-      i18n: {
-        cn: '编辑说说',
-        en: 'Edit Talk'
-      },
-      children: []
     }
   ]
 }
