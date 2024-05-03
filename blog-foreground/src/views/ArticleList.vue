@@ -1,7 +1,8 @@
 <template>
   <div class="flex flex-col">
     <div class="post-header">
-      <h1 class="post-title text-white uppercase">文章</h1>
+      <Breadcrumb :current="t('menu.post')" />
+      <h1 class="post-title text-white uppercase">{{ t('menu.post') }}</h1>
     </div>
     <div class="main-grid">
       <div class="bg-ob-deep-800 px-14 py-16 rounded-2xl shadow-xl min-h-screen">
@@ -42,6 +43,7 @@ import api from '@/api/api'
 import markdownToHtml from '@/utils/markdown'
 import { useUserStore } from '@/stores/user'
 import { Profile, Sidebar } from '@/components/Sidebar'
+import { useI18n } from 'vue-i18n'
 
 export default defineComponent({
   name: 'ArticleList',
@@ -50,6 +52,7 @@ export default defineComponent({
     const profileRef = ref<InstanceType<typeof Profile>>();
     const route = useRoute()
     const userStore = useUserStore()
+    const { t } = useI18n()
 
     const isLoginUser = ()=>{
       if(route.query.userId==null || route.query.userId == ''){
@@ -113,7 +116,8 @@ export default defineComponent({
       pageChangeHanlder,
       ...toRefs(reactiveData),
       isLoginUser,
-      profileRef
+      profileRef,
+      t
     }
   }
 })

@@ -30,6 +30,7 @@
           <template v-if="!isMobile">
             <DropdownItem @click="openUserCenter">{{ t('settings.personal-center') }}</DropdownItem>
           </template>
+          <DropdownItem @click="pushPath('/user')">{{ t('settings.user-center') }}</DropdownItem>
           <DropdownItem @click="pushPath('/article-edit')">{{ t('settings.article-add') }}</DropdownItem>
           <DropdownItem @click="pushPath('/talk-edit')">{{ t('settings.talk-add') }}</DropdownItem>
           <DropdownItem @click="logout">{{ t('settings.logout') }}</DropdownItem>

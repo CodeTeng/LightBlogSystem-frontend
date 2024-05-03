@@ -1,6 +1,9 @@
 import axios from 'axios'
 import {Ref} from 'vue'
 export default {
+  getUserForegroundInfo:(userId:any)=>{
+    return axios.get("/api/users/foreground/"+userId)
+  },
   // 上传图片
   uploadArticleImages:(fileData:FormData)=>{
     return axios.post('/api/articles/images',fileData)

@@ -21,6 +21,7 @@ import 'mavon-editor/dist/css/index.css'
 import api from './api/api'
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
+import * as echarts from 'echarts'
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
@@ -35,6 +36,7 @@ export const app = createApp(App)
     loading: require('@/assets/default-cover.jpg'),
     error: require('@/assets/default-cover.jpg')
   })
+app.config.globalProperties.$echarts = echarts;
 const userStore = useUserStore()
 axios.interceptors.request.use((config: any) => {
   config.headers['Authorization'] = 'Bearer ' + sessionStorage.getItem('token')

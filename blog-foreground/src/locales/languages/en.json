@@ -74,11 +74,12 @@
     "hot": "hot",
     "login": "LOGIN",
     "logout":"Logout",
-    "personal-center":"Personal Center",
+    "personal-center":"Personal Info",
     "running-time":"Running Time",
     "view-count":"View Count",
     "messages": "Messages",
     "article-add": "Pub Article",
-    "talk-add": "Pub Talk"
+    "talk-add": "Pub Talk" ,
+    "user-center": "User Center"
   }
 }
