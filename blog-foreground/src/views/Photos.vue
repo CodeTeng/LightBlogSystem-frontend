@@ -10,7 +10,7 @@
           width="30%"
           height="clamp(1.2rem, calc(1rem + 3.5vw), 4rem)" />
       </div>
-      <div class="main-grid">
+      <div class="main-block">
         <div class="relative">
           <div class="post-html">
             <div
@@ -30,11 +30,6 @@
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-span-1">
-          <Sidebar>
-            <Profile />
-          </Sidebar>
         </div>
       </div>
     </div>
