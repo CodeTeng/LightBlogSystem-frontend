@@ -82,6 +82,14 @@
           prefix-icon="el-icon-search"
           size="small"
           placeholder="请输入文章名"
+          style="width: 200px;margin-right: 1rem;"
+          @keyup.enter.native="searchArticles" />
+        <el-input
+          clearable
+          v-model="keyUserId"
+          prefix-icon="el-icon-search"
+          size="small"
+          placeholder="请输入用户ID"
           style="width: 200px"
           @keyup.enter.native="searchArticles" />
         <el-button type="primary" size="small" icon="el-icon-search" style="margin-left: 1rem" @click="searchArticles">
@@ -105,6 +113,8 @@
           <i v-if="scope.row.status == 3" class="iconfont el-icon-mycaogaoxiang article-status-icon" />
         </template>
       </el-table-column>
+      <el-table-column prop="id" label="文章ID" align="center" />
+      <el-table-column prop="userId" label="用户ID" align="center" />
       <el-table-column prop="articleTitle" label="标题" align="center" />
       <el-table-column prop="categoryName" label="分类" width="110" align="center" />
       <el-table-column prop="tagDTOs" label="标签" width="170" align="center">
@@ -270,6 +280,7 @@ export default {
       categories: [],
       tags: [],
       keywords: null,
+      keyUserId: null,
       review: null,
       type: null,
       categoryId: null,
@@ -480,7 +491,8 @@ export default {
             tagId: this.tagId,
             review:this.review,
             type: this.type,
-            isDelete: this.isDelete
+            isDelete: this.isDelete,
+            userId:this.keyUserId
           }
         })
         .then(({ data }) => {
