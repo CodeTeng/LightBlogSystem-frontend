@@ -119,8 +119,8 @@ export default {
       params: params
     })
   },
-  getAlbums: () => {
-    return axios.get('/api/photos/albums')
+  getAlbums: (params: any) => {
+    return axios.get('/api/photos/albums',{params: params})
   },
   getPhotosBuAlbumId: (albumId: any, params: any) => {
     return axios.get('/api/albums/' + albumId + '/photos', {

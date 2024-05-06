@@ -66,6 +66,15 @@ export default {
         en: 'Smart Assistant'
       },
       children: []
+    },
+    {
+      name: 'PhotoAlbums',
+      path: '/photos-albums',
+      i18n: {
+        cn: '相册',
+        en: 'Photo Albums'
+      },
+      children: []
     }
   ]
 }

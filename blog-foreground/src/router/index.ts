@@ -67,6 +67,11 @@ const routes = [
     component: () => import('../views/Photos.vue')
   },
   {
+    path: '/photos-albums',
+    name: 'PhotoAlbums',
+    component: () => import('../views/PhotoAlbums.vue')
+  },
+  {
     path: '/404',
     name: '404',
     component: () => import('../views/404.vue')
