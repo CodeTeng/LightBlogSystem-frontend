@@ -3,26 +3,27 @@ import { useAppStore } from '@/stores/app'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 
-const  whiteList = ['/','/home','/articles/']
+const  whiteList = ['Home','Articles']
 const check = (path:string)=>{
-  whiteList.forEach(item=>{
-    if(!path.startsWith(item)){
-      return false;
-    }
-  })
+  if(whiteList.includes(path)){
+
+  }
   return true
 }
 router.beforeEach(async (to, from, next) => {
   const appStore = useAppStore()
   const userStore = useUserStore()
   appStore.startLoading()
-  if(check(to.path)) {
+  if(to.path === '/'){
     next()
-  }else if(userStore.token!=''){
+  }
+  else if(whiteList.indexOf(<string>to.name)!=-1) {
+    next()
+  }else if(userStore.token.length!=0){
     next()
   }else {
     ElMessage.error("请先登录")
-    next("/")
+    next(from.path)
   }
 })
 

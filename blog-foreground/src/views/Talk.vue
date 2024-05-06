@@ -39,7 +39,7 @@
           </div>
           <div class="col-span-1">
             <Sidebar>
-              <Profile />
+              <Profile ref="profileRef" />
             </Sidebar>
           </div>
         </div>
@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, toRefs, provide, computed } from 'vue'
+import { defineComponent, onMounted, reactive, toRefs, provide, computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import Breadcrumb from '@/components/Breadcrumb.vue'
@@ -60,15 +60,20 @@ import { useCommentStore } from '@/stores/comment'
 import { v3ImgPreviewFn } from 'v3-img-preview'
 import emitter from '@/utils/mitt'
 import api from '@/api/api'
+import { useUserStore } from '@/stores/user'
 
 export default defineComponent({
   name: 'talks',
   components: { Breadcrumb, Sidebar, Profile, Comment, Avatar },
   setup() {
+    const profileRef = ref<InstanceType<typeof Profile>>();
     const { t } = useI18n()
     const commentStore = useCommentStore()
     const route = useRoute()
     const router = useRouter()
+    const userStore = useUserStore()
+    const userId  = ref()
+    userId.value = route.params.userId==null?userStore.userInfo.userInfoId:route.params.userId
     const reactiveData = reactive({
       talk: '' as any,
       comments: [] as any,
@@ -82,6 +87,7 @@ export default defineComponent({
     })
     commentStore.type = 5
     onMounted(() => {
+      profileRef.value?.initUserInfo(userId.value)
       toPageTop()
       fetchTalk()
       fetchComments()
@@ -162,6 +168,7 @@ export default defineComponent({
       ...toRefs(reactiveData),
       handlePreview,
       formatTime,
+      profileRef,
       t
     }
   }

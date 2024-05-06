@@ -36,7 +36,7 @@
                 <p class="text-base">{{ t('settings.articles') }}</p>
               </li>
             </router-link>
-            <router-link @click="pushRoute('/talks')" to="">
+            <router-link :to="{path:'/talks',params: {userId: userId}}">
               <li class="col-span-1 text-center">
                 <span class="text-ob-bright">{{ talkCount }}</span>
                 <p class="text-base">{{ t('settings.talks') }}</p>
@@ -76,19 +76,10 @@ export default defineComponent({
     const messageCount = ref(0) // 留言数量
     const articleCount = ref(0) // 文章数量
     const talkCount = ref(0) // 说说数量
-    const userStore = useUserStore()
-    const router = useRouter()
 
-    const pushRoute = (path: string) => {
-      if(path === '/talks') {
-        userStore.talksUserId = userId.value
-      }
-      router.push(path)
-    }
-
+    // 父元素初始化数据
     const initUserInfo = async (id:any)=>{
       userId.value = id
-      console.log(id)
       api.getUserShowById(id).then(({data}) => {
         console.log(data.data)
         if(data.flag){
@@ -125,7 +116,6 @@ export default defineComponent({
       avatar,
       userIntro,
       initUserInfo,
-      pushRoute,
       userId,
       t
     }

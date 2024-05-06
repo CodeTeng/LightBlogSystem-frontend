@@ -89,9 +89,6 @@ export default defineComponent({
       if (isExternal(path)) {
         window.location.href = path
       } else {
-        if(path=='/talks'){
-          userStore.talksUserId = userStore.userInfo.userInfoId
-        }
         router.push({
           path: path
         })

@@ -83,8 +83,10 @@ export default defineComponent({
     const profileRef = ref<InstanceType<typeof Profile>>();
     const { t } = useI18n()
     const router = useRouter()
+    const route = useRoute()
     const userStore = useUserStore()
     const userId = ref('')
+    userId.value = route.params.userId==null?userStore.userInfo.userInfoId:route.params.userId
     const isLoginUser = ref(false)
 
     const editTalk = (talkId:any)=>{
@@ -109,13 +111,7 @@ export default defineComponent({
       talks: '' as any
     })
     onMounted(() => {
-      if(userStore.talksUserId == userStore.userInfo.userInfoId){
-        userId.value = userStore.userInfo.userInfoId
-        isLoginUser.value = true
-      }else{
-        userId.value = userStore.talksUserId
-        isLoginUser.value = true
-      }
+      isLoginUser.value = userId.value == userStore.userInfo.userInfoId;
       profileRef.value?.initUserInfo(userId.value)
       fetchTalks()
     })
