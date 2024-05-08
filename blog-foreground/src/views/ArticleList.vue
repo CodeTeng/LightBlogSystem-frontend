@@ -2,11 +2,14 @@
   <div class="flex flex-col">
     <div class="post-header">
       <Breadcrumb :current="t('menu.post')" />
-      <h1 class="post-title text-white uppercase">{{ t('menu.post') }}</h1>
     </div>
+    <HorizontalArticle    :user-id="userId" class="mb-4"/>
     <div class="main-grid">
+
       <div class="bg-ob-deep-800 px-14 py-16 rounded-2xl shadow-xl min-h-screen">
+
         <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
+
           <template v-if="haveArticles === true">
             <li v-for="article in articles" :key="article.id">
               <ArticleCard class="user-list-article" :data="article" :is-login-user="isLoginUser" :is-show="true"/>
@@ -44,10 +47,11 @@ import markdownToHtml from '@/utils/markdown'
 import { useUserStore } from '@/stores/user'
 import { Profile, Sidebar } from '@/components/Sidebar'
 import { useI18n } from 'vue-i18n'
+import HorizontalArticle from '@/components/ArticleCard/src/HorizontalArticle.vue'
 
 export default defineComponent({
   name: 'ArticleList',
-  components: { Profile, Sidebar, Breadcrumb, ArticleCard, Paginator },
+  components: { HorizontalArticle, Profile, Sidebar, Breadcrumb, ArticleCard, Paginator },
   setup() {
     const profileRef = ref<InstanceType<typeof Profile>>();
     const route = useRoute()
@@ -68,15 +72,15 @@ export default defineComponent({
     })
     const reactiveData = reactive({
       articles: [] as any,
-      userId: '' as any,
+      userId: route.query.userId==null?userStore.userInfo.userInfoId:route.query.userId,
       haveArticles: false
     })
     onMounted(() => {
-      if(isLoginUser()){
-        reactiveData.userId = userStore.userInfo.userInfoId
-      }else{
-        reactiveData.userId = route.query.userId
-      }
+      // if(isLoginUser()){
+      //   reactiveData.userId = userStore.userInfo.userInfoId
+      // }else{
+      //   reactiveData.userId = route.query.userId
+      // }
       profileRef.value?.initUserInfo(reactiveData.userId)
       fetchArticles()
     })

@@ -41,6 +41,9 @@ export default {
   saveOrUpdateArticle: (data: any) => {
     return axios.post('/api/articles',data)
   },
+  getTopArticleByUserId: (id: any) => {
+    return axios.get(`/api/articles/top`, {params: {userId: id}})
+  },
   getArticleById: (articleId: any) => {
     return axios.get('/api/articles/' + articleId)
   },

@@ -470,6 +470,7 @@ export default {
               title: '成功',
               message: '修改成功'
             })
+            this.listArticles()
           } else {
             this.$notify.error({
               title: '失败',
