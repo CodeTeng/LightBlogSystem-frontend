@@ -12,7 +12,7 @@
         </div>
         <div class="col-span-1">
           <Sidebar>
-            <Profile />
+            <Profile ref="profileRef"/>
           </Sidebar>
         </div>
       </div>
@@ -20,7 +20,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, reactive, toRefs, computed, provide } from 'vue'
+import { defineComponent, onMounted, reactive, toRefs, computed, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Sidebar, Profile } from '../components/Sidebar'
 import Breadcrumb from '@/components/Breadcrumb.vue'
@@ -28,24 +28,33 @@ import { Comment } from '../components/Comment'
 import { useCommentStore } from '@/stores/comment'
 import api from '@/api/api'
 import emitter from '@/utils/mitt'
+import { useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 export default defineComponent({
   name: 'Message',
   components: { Breadcrumb, Comment, Sidebar, Profile },
   setup() {
+    const profileRef = ref<InstanceType<typeof Profile>>();
     const { t } = useI18n()
     const commentStore = useCommentStore()
+    const route = useRoute()
+    const userStore = useUserStore()
     const reactiveData = reactive({
       comments: [] as any,
       haveMore: false as any,
       isReload: false as any
     })
+    const userId = ref(route.params.userId==null ? userStore.userInfo.userInfoId : route.params.userId)
+
+
     const pageInfo = reactive({
       current: 1,
       size: 7
     })
     commentStore.type = 2
     onMounted(() => {
+      profileRef.value?.initUserInfo(userId.value)
       fetchComments()
     })
     provide(
@@ -97,7 +106,9 @@ export default defineComponent({
     }
     return {
       ...toRefs(reactiveData),
-      t
+      t,
+      profileRef,
+      userId
     }
   }
 })

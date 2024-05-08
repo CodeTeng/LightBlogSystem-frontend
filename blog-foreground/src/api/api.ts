@@ -1,6 +1,33 @@
 import axios from 'axios'
-
+import {Ref} from 'vue'
 export default {
+  getUserForegroundInfo:(userId:any)=>{
+    return axios.get("/api/users/foreground/"+userId)
+  },
+  // 上传图片
+  uploadArticleImages:(fileData:FormData)=>{
+    return axios.post('/api/articles/images',fileData)
+  },
+  // 保存或修改说说
+  saveOrUpdateTalk:(data:any)=>{
+    return axios.post('/api/talks',data)
+  },
+  // 获得登录用户对文章的评分
+  getArticleScore:(articleId: any)=>{
+    return axios.get('/api/articles/score/'+articleId)
+  },
+  // 添加用户对文章的评分
+  setArticleScore:(data:any)=>{
+    return axios.post('/api/articles/score',data)
+  },
+  // 获得用户展示框的信息
+  getUserShowById: (id: any) => {
+    return axios.get("/api/users/show/"+id)
+  },
+  // 获得所有的轮播图
+  getAllCarousels: ()=>{
+    return axios.get('/api/carousels/all')
+  },
   getTopAndFeaturedArticles: () => {
     return axios.get('/api/articles/topAndFeatured')
   },
@@ -10,11 +37,26 @@ export default {
   getArticlesByCategoryId: (params: any) => {
     return axios.get('/api/articles/categoryId', { params: params })
   },
-  getArticeById: (articleId: any) => {
+  // 保存或更新文章
+  saveOrUpdateArticle: (data: any) => {
+    return axios.post('/api/articles',data)
+  },
+  getTopArticleByUserId: (id: any) => {
+    return axios.get(`/api/articles/top`, {params: {userId: id}})
+  },
+  getArticleById: (articleId: any) => {
     return axios.get('/api/articles/' + articleId)
+  },
+  // 获得文章编辑的信息
+  getArticleEditById: (articleId: any) => {
+    return axios.get('/api/articles/edit/' + articleId)
   },
   getAllCategories: () => {
     return axios.get('/api/categories/all')
+  },
+  // 查询分类
+  listCategoriesBySearch: (params: any) => {
+    return axios.get('/api/categories/search', { params: params })
   },
   getAllTags: () => {
     return axios.get('/api/tags/all')
@@ -22,8 +64,15 @@ export default {
   getTopTenTags: () => {
     return axios.get('/api/tags/topTen')
   },
+  // 条件查询标签列表
+  listTagsBySearch:(params: any) => {
+    return axios.get('/api/tags/search', { params: params })
+  },
   getArticlesByTagId: (params: any) => {
     return axios.get('/api/articles/tagId', { params: params })
+  },
+  listArticlesByUserId: (params: any) => {
+    return axios.get('/api/articles/list/'+params.userId, { params: params })
   },
   getAllArchives: (params: any) => {
     return axios.get('/api/archives/all', { params: params })
@@ -73,8 +122,8 @@ export default {
       params: params
     })
   },
-  getAlbums: () => {
-    return axios.get('/api/photos/albums')
+  getAlbums: (params: any) => {
+    return axios.get('/api/photos/albums',{params: params})
   },
   getPhotosBuAlbumId: (albumId: any, params: any) => {
     return axios.get('/api/albums/' + albumId + '/photos', {
@@ -97,6 +146,10 @@ export default {
   },
   getTalkById: (id: any) => {
     return axios.get('/api/talks/' + id)
+  },
+  // 获得用户的说说
+  getUserTalksById: (params: any) => {
+    return axios.get('/api/talks/list',{params:params})
   },
   logout: () => {
     return axios.post('/api/users/logout')

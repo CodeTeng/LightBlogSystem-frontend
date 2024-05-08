@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import {Profile, Sidebar} from '@/components/Sidebar'
+import { Profile, Sidebar } from '@/components/Sidebar'
 import Breadcrumb from '@/components/Breadcrumb.vue'
-import {useI18n} from 'vue-i18n'
-import {useUserStore} from '@/stores/user'
-import {getCurrentInstance, nextTick, ref} from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useUserStore } from '@/stores/user'
+import { getCurrentInstance, nextTick, ref } from 'vue'
 import api from '@/api/api'
-import {ElLoading} from 'element-plus'
+import { ElLoading } from 'element-plus'
 
-const {t} = useI18n()
+const { t } = useI18n()
 const userStore = useUserStore()
 const queryContent = ref('')
 const sendMessages = ref<Array<string>>([])
-const isDisabled = ref(false)
-const loading = ref(false)
+const isDisabled =  ref(false)
 const proxy: any = getCurrentInstance()?.appContext.config.globalProperties
 
 const send = async () => {
@@ -38,12 +37,12 @@ const send = async () => {
 
 <template>
   <div>
-    <Breadcrumb :current="t('menu.smartAi')"/>
+    <Breadcrumb :current="t('menu.smartAi')" />
     <div class="flex flex-col">
       <div class="post-header">
         <h1 class="post-title text-white uppercase">{{ t('titles.smartAi') }}</h1>
       </div>
-      <div class="main-grid">
+      <div class="main-block">
         <div class="relative">
           <div class="post-html">
             <div class="dashboard-content">
@@ -99,11 +98,11 @@ const send = async () => {
             </div>
           </div>
         </div>
-        <div class="col-span-1">
-          <Sidebar>
-            <Profile/>
-          </Sidebar>
-        </div>
+<!--        <div class="col-span-1">-->
+<!--          <Sidebar>-->
+<!--            <Profile />-->
+<!--          </Sidebar>-->
+<!--        </div>-->
       </div>
     </div>
   </div>

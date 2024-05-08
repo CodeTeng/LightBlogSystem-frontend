@@ -5,44 +5,49 @@
       data-dia="author">
       <div class="profile absolute w-full flex flex-col justify-center items-center">
         <div class="flex flex-col justify-center items-center">
-          <img v-if="websiteConfig.authorAvatar" :class="avatarClass" :src="websiteConfig.authorAvatar" />
-          <img v-else :class="avatarClass" :src="default" />
+          <router-link :to="{path:'/user',params: {userId: userId}}">
+            <img v-if="avatar" :class="avatarClass" :src="avatar" />
+            <img v-else :class="avatarClass" :src="require('/src/assets/loading.gif')" alt="" />
+          </router-link>
           <h2 class="text-center pt-4 text-4xl font-semibold text-ob-bright">
-            <template v-if="websiteConfig.author">
-              {{ websiteConfig.author }}
+            <template v-if="nickName">
+              {{ nickName }}
             </template>
             <ob-skeleton v-else height="2.25rem" width="7rem" />
           </h2>
           <span class="h-1 w-14 rounded-full mt-2" :style="gradientBackground" />
           <p
-            v-if="websiteConfig.authorIntro"
+            v-if="userIntro"
             class="pt-6 px-10 w-full text-s text-center"
-            v-html="websiteConfig.authorIntro" />
+            v-html="userIntro" />
           <p v-else class="pt-6 px-10 w-full text-sm text-center flex flex-col gap-2">
             <ob-skeleton :count="2" height="20px" width="10rem" />
           </p>
         </div>
+
         <div class="h-full w-full flex flex-col flex-1 justify-end items-end">
-          <Social />
-          <ul class="grid grid-cols-4 pt-4 w-full px-2 text-lg">
-            <li class="col-span-1 text-center">
+<!--          <Social />-->
+          <ul class="grid grid-cols-3 pt-4 w-full px-2 text-lg">
+            <router-link   :to="{path:'/articles',query: {userId: userId}}">
+              <li class="col-span-1 text-center">
               <span class="text-ob-bright">
                 {{ articleCount }}
               </span>
-              <p class="text-base">{{ t('settings.articles') }}</p>
-            </li>
-            <li class="col-span-1 text-center">
-              <span class="text-ob-bright">{{ talkCount }}</span>
-              <p class="text-base">{{ t('settings.talks') }}</p>
-            </li>
-            <li class="col-span-1 text-center">
-              <span class="text-ob-bright">{{ categoryCount }}</span>
-              <p class="text-base">{{ t('settings.categories') }}</p>
-            </li>
-            <li class="col-span-1 text-center">
-              <span class="text-ob-bright">{{ tagCount }}</span>
-              <p class="text-base">{{ t('settings.tags') }}</p>
-            </li>
+                <p class="text-base">{{ t('settings.articles') }}</p>
+              </li>
+            </router-link>
+            <router-link :to="{path:'/talks',params: {userId: userId}}">
+              <li class="col-span-1 text-center">
+                <span class="text-ob-bright">{{ talkCount }}</span>
+                <p class="text-base">{{ t('settings.talks') }}</p>
+              </li>
+            </router-link>
+            <router-link :to="{path:'/message',params: {userId: userId}}">
+              <li class="col-span-1 text-center">
+                <span class="text-ob-bright"> {{ messageCount }}</span>
+                <p class="text-base">{{ t('settings.messages') }}</p>
+              </li>
+            </router-link>
           </ul>
         </div>
       </div>
@@ -52,18 +57,48 @@
 
 <script lang="ts">
 import { useAppStore } from '@/stores/app'
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, defineExpose, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Social from '@/components/Social.vue'
-
+import api from '@/api/api'
+import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
 export default defineComponent({
   name: 'Profile',
   components: { Social },
   setup() {
     const appStore = useAppStore()
     const { t } = useI18n()
+    const userId = ref('')
+    const avatar = ref(null)
+    const nickName = ref("加载中") // 用户名称
+    const userIntro = ref("")
+    const messageCount = ref(0) // 留言数量
+    const articleCount = ref(0) // 文章数量
+    const talkCount = ref(0) // 说说数量
+
+    // 父元素初始化数据
+    const initUserInfo = async (id:any)=>{
+      userId.value = id
+      api.getUserShowById(id).then(({data}) => {
+        console.log(data.data)
+        if(data.flag){
+          const userInfo = data.data;
+          avatar.value = userInfo.avatar
+          nickName.value = userInfo.nickName==null?"":userInfo.nickName
+          userIntro.value = userInfo.userIntro==null?"":userInfo.userIntro
+          messageCount.value = userInfo.messageCount==null?0:userInfo.messageCount
+          articleCount.value = userInfo.articlesCount==null?0:userInfo.articlesCount
+          talkCount.value = userInfo.talksCount==null?0:userInfo.talksCount
+        }
+      })
+    }
+
+    defineExpose({
+      initUserInfo
+    })
+
     return {
-      default: 'https://static.linhaojun.top/aurora/config/52a81cd2772167b645569342e81ce312.jpg',
       avatarClass: computed(() => {
         return {
           'ob-avatar': true,
@@ -74,13 +109,14 @@ export default defineComponent({
       gradientBackground: computed(() => {
         return { background: appStore.themeConfig.header_gradient_css }
       }),
-      websiteConfig: computed(() => {
-        return appStore.websiteConfig
-      }),
-      articleCount: computed(() => appStore.articleCount),
-      talkCount: computed(() => appStore.talkCount),
-      categoryCount: computed(() => appStore.categoryCount),
-      tagCount: computed(() => appStore.tagCount),
+      articleCount,
+      talkCount,
+      messageCount,
+      nickName,
+      avatar,
+      userIntro,
+      initUserInfo,
+      userId,
       t
     }
   }

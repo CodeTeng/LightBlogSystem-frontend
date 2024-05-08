@@ -31,7 +31,9 @@
     "comment": "评论区",
     "recent_comment": "最近评论",
     "website_info": "网站信息",
-    "notice":"公告"
+    "notice":"公告",
+    "rate":"为文章评分",
+    "edit": "编辑"
   },
   "settings": {
     "months": ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
@@ -72,8 +74,12 @@
     "hot": "热门",
     "login":"登录",
     "logout":"登出",
-    "personal-center":"个人中心",
+    "personal-center":"个人信息",
     "running-time":"运行时间",
-    "view-count":"总访问量"
+    "view-count":"总访问量",
+    "messages": "留言",
+    "article-add": "发布文章",
+    "talk-add": "发布说说",
+    "user-center": "用户中心"
   }
 }

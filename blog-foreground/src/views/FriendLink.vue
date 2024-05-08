@@ -35,7 +35,7 @@
         </div>
         <div class="col-span-1">
           <Sidebar>
-            <Profile />
+            <Profile  ref="profileRef"/>
           </Sidebar>
         </div>
       </div>
@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, provide, computed, toRefs, onMounted } from 'vue'
+import { defineComponent, reactive, provide, computed, toRefs, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Sidebar, Profile } from '../components/Sidebar'
 import Breadcrumb from '@/components/Breadcrumb.vue'
@@ -52,6 +52,7 @@ import { Comment } from '../components/Comment'
 import { useCommentStore } from '@/stores/comment'
 import emitter from '@/utils/mitt'
 import api from '@/api/api'
+import { useUserStore } from '@/stores/user'
 
 export default defineComponent({
   name: 'FriendLink',
@@ -59,11 +60,13 @@ export default defineComponent({
   setup() {
     const { t } = useI18n()
     const commentStore = useCommentStore()
+    const userStore = useUserStore()
     const reactiveData = reactive({
       links: '' as any,
       comments: [] as any,
       haveMore: false as any,
-      isReload: false as any
+      isReload: false as any,
+      profileRef: ref<InstanceType<typeof Profile>>()
     })
     const pageInfo = reactive({
       current: 1,
@@ -71,6 +74,7 @@ export default defineComponent({
     })
     commentStore.type = 4
     onMounted(() => {
+      reactiveData.profileRef?.initUserInfo(userStore.userInfo.userInfoId)
       fetchLinks()
       fetchComments()
     })

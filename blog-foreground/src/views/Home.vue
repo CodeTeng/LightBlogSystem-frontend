@@ -7,7 +7,7 @@
     <span v-if="themeConfig.feature">
       <Title id="article-list" :title="'titles.articles'" icon="article" />
     </span>
-    <div class="main-grid">
+    <div class="main-block">
       <div class="flex flex-col relative">
         <ul :class="tabClass">
           <li :class="{ active: activeTab === 0 }" @click="handleTabChange(0)">
@@ -38,7 +38,7 @@
         <span :class="expanderClass" @click="expandHandler">
           <svg-icon icon-class="chevron" />
         </span>
-        <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        <ul class="grid  md:grid-cols-2 xl:grid-cols-3 gap-8">
           <template v-if="haveArticles === true">
             <li v-for="article in articles" :key="article.id">
               <ArticleCard class="home-article" :data="article" />
@@ -55,15 +55,6 @@
           :pageTotal="pagination.total"
           :page="pagination.current"
           @pageChange="pageChangeHanlder" />
-      </div>
-      <div>
-        <Sidebar>
-          <Profile />
-          <RecentComment v-if="true" />
-          <TagBox />
-          <Notice />
-          <WebsiteInfo />
-        </Sidebar>
       </div>
     </div>
   </div>
@@ -265,6 +256,7 @@ export default defineComponent({
 </script>
 <style lang="scss">
 .home-article {
+  height: 430px;
   .article-content {
     p {
       overflow: hidden;

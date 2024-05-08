@@ -11,6 +11,7 @@ export default new Vuex.Store({
     userInfo: null,
     userMenus: [],
     pageState: {
+      carousel:1,
       articleList: 1,
       category: 1,
       tag: 1,
@@ -79,6 +80,9 @@ export default new Vuex.Store({
     },
     updateTagPageState(state, current) {
       state.pageState.tag = current
+    },
+    updateCarouselPageState(state, current) {
+      state.pageState.carousel = current
     },
     updateCommentPageState(state, current) {
       state.pageState.comment = current

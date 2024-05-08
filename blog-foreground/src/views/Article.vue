@@ -119,15 +119,16 @@
       </div>
       <div>
         <Sidebar>
-          <Profile />
           <Sticky :stickyTop="32" endingElId="footer" dynamicElClass="#sticky-sidebar">
+            <Profile ref="profile" />
             <div id="sticky-sidebar">
               <transition name="fade-slide-y" mode="out-in">
-                <div class="sidebar-box mb-4">
+                <div class="sidebar-box mb-4 ">
                   <SubTitle :title="'titles.toc'" icon="toc" />
                   <div id="toc1"></div>
                 </div>
               </transition>
+              <Rate ref="rateChild" v-if="isLogin()"/>
               <Navigator />
             </div>
           </Sticky>
@@ -138,7 +139,7 @@
 </template>
 
 <script lang="ts">
-import { Sidebar, Profile, Navigator } from '@/components/Sidebar'
+import { Sidebar, Profile, Navigator, Rate } from '@/components/Sidebar'
 import {
   computed,
   defineComponent,
@@ -166,20 +167,25 @@ import emitter from '@/utils/mitt'
 import { v3ImgPreviewFn } from 'v3-img-preview'
 import api from '@/api/api'
 import markdownToHtml from '@/utils/markdown'
+import { useUserStore } from '@/stores/user'
 
 export default defineComponent({
   name: 'Article',
-  components: { Sidebar, Comment, SubTitle, ArticleCard, Profile, Sticky, Navigator },
+  components: { Sidebar, Comment, SubTitle, ArticleCard, Profile, Sticky, Navigator,Rate },
   setup() {
+    const rateChild = ref<InstanceType<typeof Rate>>();
+    const profile = ref<InstanceType<typeof Profile>>();
     const proxy: any = getCurrentInstance()?.appContext.config.globalProperties
     const commonStore = useCommonStore()
     const commentStore = useCommentStore()
+    const userStore = useUserStore()
     const route = useRoute()
     const router = useRouter()
     const { t } = useI18n()
     const loading = ref(true)
     const articleRef = ref()
     const reactiveData = reactive({
+      userId: '' as any,
       articleId: '' as any,
       article: '' as any,
       wordNum: '' as any,
@@ -195,9 +201,13 @@ export default defineComponent({
       current: 1,
       size: 7
     })
+    const isLogin = ()=>{
+      return userStore.token != '';
+    }
     commentStore.type = 1
     onMounted(() => {
       reactiveData.articleId = route.params.articleId
+      rateChild.value?.updateScore(reactiveData.articleId)
       toPageTop()
       fetchArticle()
       fetchComments()
@@ -208,6 +218,7 @@ export default defineComponent({
       tocbot.destroy()
     })
     onBeforeRouteUpdate((to) => {
+      rateChild.value?.updateScore(to.params.articleId);
       reactiveData.article = ''
       reactiveData.readTime = ''
       reactiveData.wordNum = ''
@@ -276,7 +287,7 @@ export default defineComponent({
     }
     const fetchArticle = () => {
       loading.value = true
-      api.getArticeById(reactiveData.articleId).then(({ data }) => {
+      api.getArticleById(reactiveData.articleId).then(({ data }) => {
         if (data.code === 52003) {
           proxy.$notify({
             title: 'Error',
@@ -291,6 +302,10 @@ export default defineComponent({
           return
         }
         commonStore.setHeaderImage(data.data.articleCover)
+
+        reactiveData.userId = data.data.author.id
+        console.log(data.data)
+        profile.value?.initUserInfo(data.data.author.id)
         new Promise((resolve) => {
           data.data.articleContent = markdownToHtml(data.data.articleContent)
           resolve(data.data)
@@ -372,6 +387,9 @@ export default defineComponent({
       isMobile: computed(() => commonStore.isMobile),
       handleAuthorClick,
       loading,
+      profile,
+      rateChild,
+      isLogin,
       t
     }
   }
@@ -383,7 +401,7 @@ export default defineComponent({
   word-break: break-all;
 }
 #toc1 {
-  max-height: 470px;
+  max-height: 350px;
   overflow: hidden scroll;
 }
 #toc1 > ol {
@@ -463,6 +481,7 @@ export default defineComponent({
   }
 }
 .pre-and-next-article {
+  height: 400px;
   .article-content {
     p {
       overflow: hidden;

@@ -9,7 +9,7 @@ export const useUserStore = defineStore('userStore', {
       token: '' as any,
       accessArticles: [] as any,
       tab: 0 as any,
-      page: 1 as any
+      page: 1 as any,
     }
   },
   actions: {},

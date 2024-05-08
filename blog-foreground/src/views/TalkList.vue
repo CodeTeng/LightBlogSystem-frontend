@@ -7,13 +7,14 @@
       </div>
       <div class="main-grid">
         <div class="relative space-y-5">
+          <!--  talk循环体  -->
           <div
             class="bg-ob-deep-800 flex p-4 lg:p-8 rounded-2xl shadow-xl mb-0 talk-item"
             v-for="item in talks"
             :key="item.id"
-            @click="toTalk(item.id)">
-            <Avatar :url="item.avatar" />
-            <div class="talk-info">
+            >
+            <Avatar :url="item.avatar" @click="toTalk(item.id)" />
+            <div class="talk-info" @click="toTalk(item.id)">
               <div class="user-nickname text-sm">
                 {{ item.nickname }}
               </div>
@@ -29,6 +30,7 @@
                   item.commentCount == null ? 0 : item.commentCount
                 }}
               </div>
+
               <div class="talk-content" v-html="item.content" />
               <el-row class="talk-images" v-if="item.imgs">
                 <el-col :md="4" v-for="(img, index) of item.imgs" :key="index">
@@ -41,7 +43,11 @@
                 </el-col>
               </el-row>
             </div>
+            <div class="float-right" v-if="isLogin()">
+              <svg-icon class="inline-block text-3xl" icon-class="edit" @click="editTalk(item.id)"/>
+            </div>
           </div>
+
           <Paginator
             :pageSize="pagination.size"
             :pageTotal="pagination.total"
@@ -50,7 +56,7 @@
         </div>
         <div class="col-span-1">
           <Sidebar>
-            <Profile />
+            <Profile ref="profileRef"/>
           </Sidebar>
         </div>
       </div>
@@ -59,22 +65,42 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, toRefs } from 'vue'
+import { defineComponent, onMounted, reactive, ref, toRefs ,onBeforeUpdate} from 'vue'
 import { useI18n } from 'vue-i18n'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import { Sidebar, Profile } from '../components/Sidebar'
 import Paginator from '@/components/Paginator.vue'
 import Avatar from '../components/Avatar.vue'
 import { v3ImgPreviewFn } from 'v3-img-preview'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '@/api/api'
+import { useUserStore } from '@/stores/user'
 
 export default defineComponent({
   name: 'talkList',
   components: { Breadcrumb, Sidebar, Profile, Paginator, Avatar },
   setup() {
+    const profileRef = ref<InstanceType<typeof Profile>>();
     const { t } = useI18n()
     const router = useRouter()
+    const route = useRoute()
+    const userStore = useUserStore()
+    const userId = ref('')
+    userId.value = route.params.userId==null?userStore.userInfo.userInfoId:route.params.userId
+    const isLoginUser = ref(false)
+
+    const editTalk = (talkId:any)=>{
+      router.push({
+        path: `/talk-edit`,
+        query:{talkId:talkId}
+      })
+    }
+
+    const isLogin = ()=>{
+      if(userStore.userInfo==='') return false;
+      return userStore.userInfo.userInfoId === userId.value
+    }
+
     const pagination = reactive({
       size: 7,
       total: 0,
@@ -85,17 +111,21 @@ export default defineComponent({
       talks: '' as any
     })
     onMounted(() => {
+      isLoginUser.value = userId.value == userStore.userInfo.userInfoId;
+      profileRef.value?.initUserInfo(userId.value)
       fetchTalks()
     })
     const handlePreview = (index: any) => {
       v3ImgPreviewFn({ images: reactiveData.images, index: reactiveData.images.indexOf(index) })
     }
+    // 加载说说列表
     const fetchTalks = () => {
       const params = {
         current: pagination.current,
-        size: pagination.size
+        size: pagination.size,
+        userId: userId.value
       }
-      api.getTalks(params).then(({ data }) => {
+      api.getUserTalksById(params).then(({ data }) => {
         reactiveData.talks = data.data.records
         pagination.total = data.data.count
         reactiveData.talks.forEach((item: any) => {
@@ -132,6 +162,11 @@ export default defineComponent({
       pageChangeHanlder,
       handlePreview,
       toTalk,
+      userId,
+      profileRef,
+      isLoginUser,
+      editTalk,
+      isLogin,
       t
     }
   }

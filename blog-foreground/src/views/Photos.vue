@@ -10,7 +10,7 @@
           width="30%"
           height="clamp(1.2rem, calc(1rem + 3.5vw), 4rem)" />
       </div>
-      <div class="main-grid">
+      <div class="main-block">
         <div class="relative">
           <div class="post-html">
             <div
@@ -21,20 +21,17 @@
               infinite-scroll-watch-disabled="scrollDisabled"
               :infinite-scroll-distance="isMobile ? 0 : 30">
               <div class="photo-wrap">
-                <img
-                  v-for="(item, index) of photos"
-                  class="photo"
-                  :key="index"
-                  :src="item"
-                  @click="handlePreview(index)" />
+                <div v-for="(item, index) of photos"  :key="index" style="position: relative">
+                  <svg-icon icon-class="download" class="download-icon text-3xl"  @click.stop="downloadByBlob(item)"/>
+                  <img
+                    class="photo"
+                    :src="item"
+                    @click="handlePreview(index)" />
+                </div>
+
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-span-1">
-          <Sidebar>
-            <Profile />
-          </Sidebar>
         </div>
       </div>
     </div>
@@ -49,10 +46,11 @@ import { Sidebar, Profile } from '../components/Sidebar'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import { v3ImgPreviewFn } from 'v3-img-preview'
 import api from '@/api/api'
+import SvgIcon from '@/components/SvgIcon/index.vue'
 
 export default defineComponent({
   name: 'Photos',
-  components: { Breadcrumb, Sidebar, Profile },
+  components: { SvgIcon, Breadcrumb, Sidebar, Profile },
   setup() {
     const { t } = useI18n()
     const route = useRoute()
@@ -91,10 +89,15 @@ export default defineComponent({
         }
       })
     }
+
+    const downloadByBlob = (url:string) =>{
+      window.open(url, '_self')
+    }
     return {
       ...toRefs(reactiveData),
       handlePreview,
       loadDataFromServer,
+      downloadByBlob,
       isMobile: computed(() => commonStore.isMobile),
       t
     }
@@ -111,7 +114,7 @@ export default defineComponent({
   cursor: pointer;
   flex-grow: 1;
   object-fit: cover;
-  height: 200px;
+  height: 300px;
 }
 .photo-wrap::after {
   content: '';
@@ -122,5 +125,12 @@ export default defineComponent({
   .photo {
     width: 100%;
   }
+}
+.download-icon{
+  position: absolute;
+  top: 5px;
+  left: 93%;
+  right: 0;
+  bottom: 0;
 }
 </style>
