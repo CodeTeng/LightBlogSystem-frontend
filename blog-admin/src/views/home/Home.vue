@@ -7,7 +7,7 @@
             <i class="iconfont el-icon-myfangwenliang" style="color: #40c9c6" />
           </div>
           <div class="card-desc">
-            <div class="card-title">访问量</div>
+            <div class="card-title">系统访问量</div>
             <div class="card-count">{{ viewsCount }}</div>
           </div>
         </el-card>
@@ -18,7 +18,7 @@
             <i class="iconfont el-icon-myuser" style="color: #34bfa3" />
           </div>
           <div class="card-desc">
-            <div class="card-title">用户量</div>
+            <div class="card-title">系统用户量</div>
             <div class="card-count">{{ userCount }}</div>
           </div>
         </el-card>
@@ -29,7 +29,7 @@
             <i class="iconfont el-icon-mywenzhang-copy" style="color: #f4516c" />
           </div>
           <div class="card-desc">
-            <div class="card-title">文章量</div>
+            <div class="card-title">系统文章量</div>
             <div class="card-count">{{ articleCount }}</div>
           </div>
         </el-card>
@@ -40,20 +40,20 @@
             <i class="el-icon-s-comment" style="color: #36a3f7" />
           </div>
           <div class="card-desc">
-            <div class="card-title">留言量</div>
+            <div class="card-title">系统留言量</div>
             <div class="card-count">{{ messageCount }}</div>
           </div>
         </el-card>
       </el-col>
     </el-row>
     <el-card style="margin-top: 1.25rem">
-      <div class="e-title">一周访问量</div>
+      <div class="e-title">系统一周访问量</div>
       <div style="height: 350px">
         <v-chart :options="viewCount" v-loading="loading" />
       </div>
     </el-card>
     <el-card style="margin-top: 1.25rem">
-      <div class="e-title">文章贡献统计</div>
+      <div class="e-title">系统用户文章贡献统计</div>
       <div v-loading="loading">
         <calendar-heatmap :end-date="new Date()" :values="articleStatisticsDTOs" />
       </div>
@@ -87,7 +87,7 @@
     <el-row :gutter="20" style="margin-top: 1.25rem">
       <el-col :span="16">
         <el-card>
-          <div class="e-title">文章浏览量排行</div>
+          <div class="e-title">系统热点文章Top5</div>
           <div style="height: 350px">
             <v-chart :options="ariticleRank" v-loading="loading" />
           </div>
@@ -95,7 +95,7 @@
       </el-col>
       <el-col :span="8">
         <el-card>
-          <div class="e-title">文章分类统计</div>
+          <div class="e-title">系统文章分类统计</div>
           <div style="height: 350px">
             <v-chart :options="category" v-loading="loading" />
           </div>
@@ -105,8 +105,8 @@
     <el-row :gutter="20" style="margin-top: 1.25rem">
       <el-col :span="16">
         <el-card>
-          <div class="e-title">用户地域分布</div>
-          <div style="height: 350px" v-loading="loading">
+          <div class="e-title">系统用户地域分布</div>
+          <div style="height: 375px" v-loading="loading">
             <div class="area-wrapper">
               <el-radio-group v-model="type">
                 <el-radio :label="1">用户</el-radio>
@@ -119,9 +119,27 @@
       </el-col>
       <el-col :span="8">
         <el-card>
-          <div class="e-title">文章标签统计</div>
+          <div class="e-title">系统文章标签词云</div>
           <div style="height: 350px" v-loading="loading">
             <tag-cloud style="margin-top: 1.5rem" :data="tagDTOs" />
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20" style="margin-top: 1.25rem">
+      <el-col :span="12">
+        <el-card>
+          <div class="e-title">系统文章标签统计</div>
+          <div style="height: 550px">
+            <v-chart :options="tagDTOList" v-loading="loading" />
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="12">
+        <el-card>
+          <div class="e-title">系统前10文章标签统计</div>
+          <div style="height: 550px">
+            <v-chart :options="tagTopTenList" v-loading="loading" />
           </div>
         </el-card>
       </el-col>
@@ -368,6 +386,52 @@ export default {
             areaColor: '#0FB8F0'
           }
         ]
+      },
+      tagDTOList: {
+        color: ['#7EC0EE', '#FF9F7F', '#FFD700', '#C9C9C9', '#E066FF', '#36dc59', '#C0FF3E'],
+        legend: {
+          data: [],
+          bottom: 'bottom'
+        },
+        tooltip: {
+          trigger: 'item'
+        },
+        series: [
+          {
+            name: '系统文章标签统计',
+            type: 'pie',
+            roseType: 'radius',
+            label: {
+              formatter: function(data) {
+                return `${data.name} ${data.value}(${data.percent.toFixed(2)}%)`
+              }
+            },
+            data: []
+          }
+        ]
+      },
+      tagTopTenList: {
+        color: ['#7EC0EE', '#FF9F7F', '#FFD700', '#C9C9C9', '#E066FF', '#36dc59', '#C0FF3E'],
+        legend: {
+          data: [],
+          bottom: 'bottom'
+        },
+        tooltip: {
+          trigger: 'item'
+        },
+        series: [
+          {
+            name: '系统前10文章标签统计',
+            type: 'pie',
+            roseType: 'radius',
+            label: {
+              formatter: function(data) {
+                return `${data.name} ${data.value}(${data.percent.toFixed(2)}%)`
+              }
+            },
+            data: []
+          }
+        ]
       }
     }
   },
@@ -436,6 +500,26 @@ export default {
               id: item.id,
               name: item.tagName
             })
+          })
+        }
+
+        if (data.data.tagDTOList != null) {
+          data.data.tagDTOList.forEach((item) => {
+            this.tagDTOList.series[0].data.push({
+              value: item.count,
+              name: item.tagName
+            })
+            this.tagDTOList.legend.data.push(item.tagName)
+          })
+        }
+
+        if (data.data.tagTopTenList != null) {
+          data.data.tagTopTenList.forEach(item => {
+            this.tagTopTenList.series[0].data.push({
+              value: item.count,
+              name: item.tagName
+            })
+            this.tagTopTenList.legend.data.push(item.tagName)
           })
         }
 

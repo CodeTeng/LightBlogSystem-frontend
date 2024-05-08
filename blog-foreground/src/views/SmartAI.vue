@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { Profile, Sidebar } from '@/components/Sidebar'
+import {Profile, Sidebar} from '@/components/Sidebar'
 import Breadcrumb from '@/components/Breadcrumb.vue'
-import { useI18n } from 'vue-i18n'
-import { useUserStore } from '@/stores/user'
-import { getCurrentInstance, nextTick, ref } from 'vue'
+import {useI18n} from 'vue-i18n'
+import {useUserStore} from '@/stores/user'
+import {getCurrentInstance, nextTick, ref} from 'vue'
 import api from '@/api/api'
-import { ElLoading } from 'element-plus'
+import {ElLoading} from 'element-plus'
 
-const { t } = useI18n()
+const {t} = useI18n()
 const userStore = useUserStore()
 const queryContent = ref('')
 const sendMessages = ref<Array<string>>([])
-const isDisabled =  ref(false)
+const isDisabled = ref(false)
+const loading = ref(false)
 const proxy: any = getCurrentInstance()?.appContext.config.globalProperties
 
 const send = async () => {
@@ -25,24 +26,19 @@ const send = async () => {
   }
   if (queryContent.value === '') return
   isDisabled.value = true
-  const loadingInstance = ElLoading.service({
-    fullscreen: false
-  })
-  nextTick(async () => {
-    // Loading should be closed asynchronously
-    const res = await api.query(queryContent.value)
-    sendMessages.value.push(queryContent.value)
-    queryContent.value = ''
-    sendMessages.value.push(res.data.data)
-    isDisabled.value = false
-    loadingInstance.close()
-  })
+  loading.value = true
+  const res = await api.query(queryContent.value)
+  sendMessages.value.push(queryContent.value)
+  queryContent.value = ''
+  sendMessages.value.push(res.data.data)
+  loading.value = false
+  isDisabled.value = false
 }
 </script>
 
 <template>
   <div>
-    <Breadcrumb :current="t('menu.smartAi')" />
+    <Breadcrumb :current="t('menu.smartAi')"/>
     <div class="flex flex-col">
       <div class="post-header">
         <h1 class="post-title text-white uppercase">{{ t('titles.smartAi') }}</h1>
@@ -59,7 +55,8 @@ const send = async () => {
                     </div>
                     <div class="msg-content">
                       <p class="msg">
-                        {{ userStore.userInfo.nickname
+                        {{
+                          userStore.userInfo.nickname
                         }}你好，我是您的智能专属小助手，有任何需要咨询的问题，都可以向我提问，我会全心全意为您解答！</p>
                     </div>
                   </div>
@@ -88,13 +85,15 @@ const send = async () => {
             </div>
             <div class="msg-reply">
               <el-input
-                v-model="queryContent"
-                style="width: 1000px"
-                @change="send"
-                placeholder="输入要咨询的内容..."
+                  v-model="queryContent"
+                  style="width: 1000px"
+                  @change="send"
+                  placeholder="输入要咨询的内容..."
               >
                 <template #append>
-                  <el-button type="primary" :disabled="isDisabled" style="width: 100px" size="large" @click="send">发送</el-button>
+                  <el-button type="primary" :disabled="isDisabled" :loading="loading" style="width: 100px" size="large"
+                             @click="send">发送
+                  </el-button>
                 </template>
               </el-input>
             </div>
@@ -102,7 +101,7 @@ const send = async () => {
         </div>
         <div class="col-span-1">
           <Sidebar>
-            <Profile />
+            <Profile/>
           </Sidebar>
         </div>
       </div>
