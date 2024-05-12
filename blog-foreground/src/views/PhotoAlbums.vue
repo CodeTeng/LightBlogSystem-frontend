@@ -159,6 +159,7 @@ export default defineComponent({
 .album-item {
   position: relative;
   cursor: pointer;
+  height: 400px;
 }
 :deep(.el-card__body){
   padding: 0;
