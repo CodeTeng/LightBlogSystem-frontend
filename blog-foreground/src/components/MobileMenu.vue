@@ -122,7 +122,7 @@ export default defineComponent({
       fetchAblums()
     })
     const fetchAblums = () => {
-      api.getAlbums().then(({ data }) => {
+      api.getAlbums(null).then(({ data }) => {
         reactiveData.albums = data.data
       })
     }

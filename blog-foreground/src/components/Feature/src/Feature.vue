@@ -1,16 +1,17 @@
 <template>
   <div id="feature">
-    <horizontal-article class="home-horizontal-article" />
+    <HomeSwiper />
     <slot />
   </div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-import HorizontalArticle from '@/components/ArticleCard/src/HorizontalArticle.vue'
+import HomeSwiper from '@/components/HomeSwiper.vue'
+
 
 export default defineComponent({
   name: 'Feature',
-  components: { HorizontalArticle },
+  components: { HomeSwiper },
   setup() {
     return {}
   }
@@ -18,15 +19,4 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.home-horizontal-article {
-  .feature-content {
-    p {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 4;
-      -webkit-box-orient: vertical;
-    }
-  }
-}
 </style>

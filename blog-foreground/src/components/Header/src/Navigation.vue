@@ -1,6 +1,7 @@
 <template>
   <nav class="items-center flex-1 hidden lg:flex">
     <ul class="flex flex-row list-none px-6 text-white">
+      <!--  头部导航   -->
       <li
         class="not-italic font-medium text-xs h-full relative flex flex-col items-center justify-center cursor-pointer text-center py-4 px-2"
         v-for="route in routes"
@@ -8,7 +9,7 @@
         <div
           class="nav-link text-sm block px-1.5 py-0.5 rounded-md relative uppercase cursor-pointer"
           @click="pushPage(route.path)"
-          v-if="route.children && route.children.length === 0"
+          v-if="route.children && route.children.length === 0&&checkPath(route.path)"
           :data-menu="route.name">
           <span class="relative z-50" v-if="$i18n.locale === 'cn' && route.i18n.cn">
             {{ route.i18n.cn }}
@@ -21,7 +22,7 @@
         <Dropdown
           @command="pushPage"
           hover
-          v-else
+          v-else-if="checkPath(route.path)"
           class="nav-link text-sm block px-1.5 py-0.5 rounded-md relative uppercase">
           <span class="relative z-50" v-if="$i18n.locale === 'cn' && route.i18n.cn">
             {{ route.i18n.cn }}
@@ -43,34 +44,20 @@
           </DropdownMenu>
         </Dropdown>
       </li>
-      <li
-        class="not-italic font-medium text-xs h-full relative flex flex-col items-center justify-center cursor-pointer text-center py-4 px-2"
-        data-menu="PhotoAlbums">
-        <Dropdown hover class="nav-link text-sm block px-1.5 py-0.5 rounded-md relative uppercase">
-          <span class="relative z-50" v-if="$i18n.locale === 'cn'"> 相册 </span>
-          <span class="relative z-50" v-else-if="$i18n.locale === 'en'"> PhotoAlbums </span>
-          <DropdownMenu>
-            <template v-for="item in albums" :key="item.id">
-              <DropdownItem @click="pushPage(`/photos/${item.id}`)" :name="item.albumName">
-                <span class="relative z-50">{{ item.albumName }}</span>
-              </DropdownItem>
-            </template>
-          </DropdownMenu>
-        </Dropdown>
-      </li>
     </ul>
   </nav>
 </template>
 
 <script lang="ts">
 // @ts-nocheck
-import { defineComponent, onMounted, reactive, toRef, toRefs } from 'vue'
+import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Dropdown, DropdownMenu, DropdownItem } from '@/components/Dropdown'
 import { isExternal } from '@/utils/validate'
 import config from '@/config/config'
 import api from '@/api/api'
+import { useUserStore } from '@/stores/user'
 
 export default defineComponent({
   name: 'Navigation',
@@ -78,6 +65,7 @@ export default defineComponent({
   setup() {
     const { t, te } = useI18n()
     const router = useRouter()
+    const userStore = useUserStore()
     const pushPage = (path: string): void => {
       if (!path) return
       if (isExternal(path)) {
@@ -99,12 +87,22 @@ export default defineComponent({
     const openPhotoAlbum = (id: any): void => {
       router.push('/photos/' + id)
     }
+    // 返回能直接
+    const checkPath = (path: string): boolean => {
+      const wPath = ["/","/home"]
+      if(userStore.token==null||userStore.token==''){
+        return wPath.includes(path)
+      }
+      return true;
+
+    }
     return {
       ...toRefs(reactiveData),
       routes: config.routes,
       pushPage,
       openPhotoAlbum,
       te,
+      checkPath,
       t
     }
   }

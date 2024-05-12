@@ -3,9 +3,9 @@
     <div v-show="showDia" id="bot-container">
       <div id="Aurora-Dia--body" :style="cssVariables">
         <div id="Aurora-Dia--tips-wrapper">
-          <div id="Aurora-Dia--tips" class="Aurora-Dia--tips">早上好呀～</div>
+          <div id="Aurora-Dia--tips" class="Aurora-Dia--tips">有什么问题都可以问我哦～</div>
         </div>
-        <div id="Aurora-Dia" class="Aurora-Dia">
+        <div id="Aurora-Dia" class="Aurora-Dia" @click="router.push('/smartAi')">
           <div id="Aurora-Dia--eyes" class="Aurora-Dia--eyes">
             <div id="Aurora-Dia--left-eye" class="Aurora-Dia--eye left"></div>
             <div id="Aurora-Dia--right-eye" class="Aurora-Dia--eye right"></div>
@@ -22,12 +22,14 @@
 import { computed, defineComponent, onMounted, ref } from 'vue'
 import { useDiaStore } from '@/stores/dia'
 import { useAppStore } from '@/stores/app'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'Dia',
   setup() {
     const diaStore = useDiaStore()
     const appStore = useAppStore()
+    const router = useRouter()
     const showDia = ref(false)
     onMounted(() => {
       initializeBot()
@@ -54,7 +56,8 @@ export default defineComponent({
           --aurora-dia--platform-light: ${appStore.themeConfig.gradient.color_3};
         `
       }),
-      showDia
+      showDia,
+      router
     }
   }
 })
@@ -152,7 +155,7 @@ export default defineComponent({
   width: var(--auora-dia--platform-size);
   height: var(--auora-dia--platform-size);
   box-shadow: 0 0 var(--auora-dia--platform-size) var(--aurora-dia--platform-light),
-    0 0 15px var(--aurora-dia--platform-light) inset;
+  0 0 15px var(--aurora-dia--platform-light) inset;
   animation: jump-pulse 3s linear infinite;
 }
 

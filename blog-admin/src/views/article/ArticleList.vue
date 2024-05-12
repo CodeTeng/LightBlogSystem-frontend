@@ -82,6 +82,14 @@
           prefix-icon="el-icon-search"
           size="small"
           placeholder="请输入文章名"
+          style="width: 200px;margin-right: 1rem;"
+          @keyup.enter.native="searchArticles" />
+        <el-input
+          clearable
+          v-model="keyUserId"
+          prefix-icon="el-icon-search"
+          size="small"
+          placeholder="请输入用户ID"
           style="width: 200px"
           @keyup.enter.native="searchArticles" />
         <el-button type="primary" size="small" icon="el-icon-search" style="margin-left: 1rem" @click="searchArticles">
@@ -105,6 +113,8 @@
           <i v-if="scope.row.status == 3" class="iconfont el-icon-mycaogaoxiang article-status-icon" />
         </template>
       </el-table-column>
+      <el-table-column prop="id" label="文章ID" align="center" />
+      <el-table-column prop="userId" label="用户ID" align="center" />
       <el-table-column prop="articleTitle" label="标题" align="center" />
       <el-table-column prop="categoryName" label="分类" width="110" align="center" />
       <el-table-column prop="tagDTOs" label="标签" width="170" align="center">
@@ -157,6 +167,18 @@
             :active-value="1"
             :inactive-value="0"
             @change="changeTopAndFeatured(scope.row)" />
+        </template>
+      </el-table-column>
+      <el-table-column prop="review" label="审核" width="100" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.review"
+            :disabled="scope.row.isDelete == 1"
+            :active-value="1"
+            :inactive-value="0"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="changeAudit(scope.row)" />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="150">
@@ -258,6 +280,8 @@ export default {
       categories: [],
       tags: [],
       keywords: null,
+      keyUserId: null,
+      review: null,
       type: null,
       categoryId: null,
       tagId: null,
@@ -415,6 +439,24 @@ export default {
       this.current = 1
       this.activeStatus = status
     },
+    changeAudit(article){
+      this.axios.post('/api/admin/articles/review',{
+        articleId:article.id,
+        review:article.review
+      }).then(({data})=>{
+        if (data.flag) {
+          this.$notify.success({
+            title: '成功',
+            message: '修改成功'
+          })
+        } else {
+          this.$notify.error({
+            title: '失败',
+            message: data.message
+          })
+        }
+      })
+    },
     changeTopAndFeatured(article) {
       this.axios
         .put('/api/admin/articles/topAndFeatured', {
@@ -428,6 +470,7 @@ export default {
               title: '成功',
               message: '修改成功'
             })
+            this.listArticles()
           } else {
             this.$notify.error({
               title: '失败',
@@ -447,12 +490,15 @@ export default {
             categoryId: this.categoryId,
             status: this.status,
             tagId: this.tagId,
+            review:this.review,
             type: this.type,
-            isDelete: this.isDelete
+            isDelete: this.isDelete,
+            userId:this.keyUserId
           }
         })
         .then(({ data }) => {
           this.articles = data.data.records
+          console.log(this.articles)
           this.count = data.data.count
           this.loading = false
         })

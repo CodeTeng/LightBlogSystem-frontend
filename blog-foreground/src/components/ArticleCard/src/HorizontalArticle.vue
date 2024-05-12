@@ -1,12 +1,12 @@
 <template>
   <div class="article-container" @click="toArticle">
-    <span v-if="article.isTop" class="article-tag">
+    <span v-if="article?.isTop" class="article-tag">
       <b>
         <svg-icon icon-class="pin" />
         {{ t('settings.pinned') }}
       </b>
     </span>
-    <span v-else-if="article.isfeatured" class="article-tag">
+    <span v-else-if="article?.isfeatured" class="article-tag">
       <b>
         <svg-icon icon-class="hot" />
         {{ t('settings.featured') }}
@@ -14,23 +14,23 @@
     </span>
     <div class="feature-article">
       <div class="feature-thumbnail">
-        <img v-if="article.articleCover" class="ob-hz-thumbnail" v-lazy="article.articleCover" />
+        <img v-if="article?.articleCover" class="ob-hz-thumbnail" v-lazy="article?.articleCover" />
         <img v-else class="ob-hz-thumbnail" src="@/assets/default-cover.jpg" />
         <span class="thumbnail-screen" :style="bannerHoverGradient" />
       </div>
       <div class="feature-content">
         <span>
-          <b v-if="article.categoryName">
+          <b v-if="article?.categoryName">
             {{ article.categoryName }}
           </b>
           <ob-skeleton v-else tag="b" height="20px" width="35px" />
           <ul>
-            <template v-if="article.tags && article.tags.length > 0">
+            <template v-if="article?.tags && article?.tags.length > 0">
               <li v-for="tag in article.tags" :key="tag.id">
                 <em># {{ tag.tagName }}</em>
               </li>
             </template>
-            <template v-else-if="article.tags && article.tags.length <= 0">
+            <template v-else-if="article?.tags && article.tags.length <= 0">
               <li>
                 <em># {{ t('settings.default-tag') }}</em>
               </li>
@@ -38,14 +38,14 @@
             <ob-skeleton v-else :count="2" tag="li" height="16px" width="35px" />
           </ul>
         </span>
-        <h1 class="article-title" v-if="article.articleTitle">
+        <h1 class="article-title" v-if="article?.articleTitle">
           <a>
-            <span data-dia="article-link">{{ article.articleTitle }}</span>
+            <span data-dia="article-link">{{ article?.articleTitle }}</span>
             <svg-icon v-if="article.status == 2" icon-class="lock" class="lock-svg" />
           </a>
         </h1>
         <ob-skeleton v-else tag="h1" height="3rem" />
-        <p v-if="article.articleContent" class="article-content-main">{{ article.articleContent }}</p>
+        <p v-if="article?.articleContent" class="article-content-main">{{ article.articleContent }}</p>
         <ob-skeleton v-else tag="p" :count="4" height="20px" />
         <div class="article-footer" v-if="article">
           <div class="flex flex-row items-center">
@@ -79,35 +79,61 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, toRef, getCurrentInstance } from 'vue'
+import {
+  computed,
+  defineComponent,
+  getCurrentInstance,
+  ref,
+  toRefs,
+} from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import { useArticleStore } from '@/stores/article'
 import { useI18n } from 'vue-i18n'
 import emitter from '@/utils/mitt'
+import api from '@/api/api'
 
 export default defineComponent({
   name: 'HorizontalArticle',
-  setup() {
+  props:["userId"],
+  setup(props) {
     const proxy: any = getCurrentInstance()?.appContext.config.globalProperties
     const appStore = useAppStore()
     const articleStore = useArticleStore()
     const userStore = useUserStore()
     const router = useRouter()
     const { t } = useI18n()
+    const userId = toRefs(props).userId
+    const article = ref<any>(null)
+
+
+
+    const getTopArticle = async () =>{
+      await api.getTopArticleByUserId(userId.value).then(({data}) => {
+        if(data.flag){
+          article.value = data.data
+        }
+      })
+    }
+    getTopArticle()
+
+
+
+
     const handleAuthorClick = (link: string) => {
       if (link === '') link = window.location.href
       window.open(link)
     }
+
     const toArticle = () => {
       let isAccess = false
       userStore.accessArticles.forEach((item: any) => {
-        if (item == articleStore.topArticle.id) {
+        if (item == article.value.id) {
           isAccess = true
         }
       })
-      if (articleStore.topArticle.status == 2 && isAccess == false) {
+      if (article.value.status == 2 ) {
         if (userStore.userInfo === '') {
           proxy.$notify({
             title: 'Warning',
@@ -115,17 +141,19 @@ export default defineComponent({
             type: 'warning'
           })
         } else {
-          emitter.emit('changeArticlePasswordDialogVisible', articleStore.topArticle.id)
+          emitter.emit('changeArticlePasswordDialogVisible', article.value.id)
         }
       } else {
-        router.push({ path: '/articles/' + articleStore.topArticle.id })
+        router.push({ path: '/articles/' + article.value.id })
       }
     }
+
+
     return {
       bannerHoverGradient: computed(() => {
         return { background: appStore.themeConfig.header_gradient_css }
       }),
-      article: toRef(articleStore.$state, 'topArticle'),
+      article,
       handleAuthorClick,
       toArticle,
       t
