@@ -12,7 +12,7 @@
             class="bg-ob-deep-800 flex p-4 lg:p-8 rounded-2xl shadow-xl mb-0 talk-item"
             v-for="item in talks"
             :key="item.id"
-            >
+          >
             <Avatar :url="item.avatar" @click="toTalk(item.id)" />
             <div class="talk-info" @click="toTalk(item.id)">
               <div class="user-nickname text-sm">
@@ -44,7 +44,17 @@
               </el-row>
             </div>
             <div class="float-right" v-if="isLogin()">
-              <svg-icon class="inline-block text-3xl" icon-class="edit" @click="editTalk(item.id)"/>
+              <el-dropdown>
+                <span class="el-dropdown-link">
+                  <svg-icon class="inline-block text-3xl" icon-class="more"  />
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click="editTalk(item.id)" ><el-button type="primary" text class="w-12">编辑</el-button></el-dropdown-item>
+                    <el-dropdown-item @click="deleteTalk(item.id)" ><el-button type="danger" text class="w-12">删除</el-button></el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </div>
           </div>
 
@@ -75,6 +85,7 @@ import { v3ImgPreviewFn } from 'v3-img-preview'
 import { useRoute, useRouter } from 'vue-router'
 import api from '@/api/api'
 import { useUserStore } from '@/stores/user'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 export default defineComponent({
   name: 'talkList',
@@ -94,6 +105,33 @@ export default defineComponent({
         path: `/talk-edit`,
         query:{talkId:talkId}
       })
+    }
+    const deleteTalk = (talkId:any)=>{
+      ElMessageBox.confirm(
+        '删除后不可恢复,确定删除?',
+        'Warning',
+        {
+          buttonSize:'small',
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          cancelButtonClass: 'messageBoxP_cancelBtn',
+          confirmButtonClass: 'messageBoxP_confirmBtn',
+          customClass: 'persdsd',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          api.deleteTalkById(talkId).then(({data})=>{
+            if(data.flag){
+              ElMessage({
+                type: 'success',
+                message: '删除成功',
+              })
+              fetchTalks()
+              profileRef.value?.initUserInfo(userId.value)
+            }
+          })
+        })
     }
 
     const isLogin = ()=>{
@@ -167,6 +205,7 @@ export default defineComponent({
       isLoginUser,
       editTalk,
       isLogin,
+      deleteTalk,
       t
     }
   }
@@ -219,4 +258,18 @@ export default defineComponent({
   border-radius: 3px;
   margin-right: 5px;
 }
+</style>
+<style lang="scss">
+
+.persdsd {
+  .el-message-box__btns {
+    .messageBoxP_cancelBtn {
+      width: 150px;
+    }
+    .messageBoxP_confirmBtn {
+      width: 150px;
+    }
+  }
+}
+
 </style>

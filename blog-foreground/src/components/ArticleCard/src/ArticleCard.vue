@@ -13,11 +13,70 @@
       </b>
     </span>
     <div class="article">
+      <div class="article-thumbnail relative">
+        <img v-if="article.articleCover" v-lazy="article.articleCover" alt="" class="article-cover"/>
+        <img v-else src="@/assets/default-cover.jpg" class="article-cover"/>
 
-      <div class="article-thumbnail">
-        <img v-if="article.articleCover" v-lazy="article.articleCover" alt="" />
-        <img v-else src="@/assets/default-cover.jpg" />
         <span class="thumbnail-screen" :style="gradientBackground" />
+        <!--  编辑信息下拉框  -->
+        <el-dropdown
+          ref="dropdownRef"
+          trigger="contextmenu"
+          class="z-30 absolute w-full h-12/10 svg-info  opacity-40"
+        >
+          <svg-icon
+            class=" text-3xl"
+            icon-class="article-more"
+            v-if="isLoginUser"
+            @click.stop="onShow"
+          >
+          </svg-icon>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item  @click.stop="editArticle" class="main-grid">编辑文章</el-dropdown-item>
+              <el-dropdown-item @click.stop="deleteArticle" class="main-grid">删除文章</el-dropdown-item>
+              <el-dropdown-item><el-switch
+                v-model="article.status"
+                class="ml-2"
+                inline-prompt
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                active-text="已公开"
+                inactive-text="未公开"
+                :active-value="1"
+                :inactive-value="2"
+                :width="100"
+                @click="updateArticle"
+              /></el-dropdown-item>
+              <el-dropdown-item><el-switch
+                v-model="article.isTop"
+                class="ml-2"
+                inline-prompt
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #cbcb00"
+                active-text="已置顶"
+                inactive-text="未置顶"
+                :active-value="1"
+                :inactive-value="0"
+                :width="100"
+                @click="updateArticle"
+              /></el-dropdown-item>
+              <el-dropdown-item><el-switch
+                v-model="article.isFeatured"
+                class="ml-2"
+                inline-prompt
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #D67E3EFF"
+                active-text="已推荐"
+                inactive-text="未推荐"
+                :active-value="1"
+                :inactive-value="0"
+                :width="100"
+                @click="updateArticle"
+              /></el-dropdown-item>
+              <el-dropdown-item class="main-grid"> <el-tag :type="article.review==1?'success':'danger'">{{getPopoverContent(article).reviewStr}}</el-tag></el-dropdown-item>
+              <el-dropdown-item class="main-grid"><el-tag type="primary">{{getPopoverContent(article).typeStr}}</el-tag></el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+
       </div>
       <div class="article-content">
         <span>
@@ -75,26 +134,13 @@
           </div>
         </div>
       </div>
-      <el-popover
-        placement="top-start"
-        title="文章信息:点击可编辑"
-        :width="200"
-        trigger="hover"
-        v-if="isLoginUser!=null&&isShow!=null&&isLoginUser&&isShow"
-      >
-        <template #reference>
-          <el-button  :icon="Edit"  plain class="mx-auto border-0" text @click.stop="editArticle"/>
-        </template>
-        <el-tag type='primary'> 文章状态：{{getPopoverContent(article).statusStr }} </el-tag>
-        <el-tag type='success'> 文章类型：{{getPopoverContent(article).typeStr}}</el-tag>
-        <el-tag type='info'> 审核状态：{{getPopoverContent(article).reviewStr}}</el-tag>
-      </el-popover>
+
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, getCurrentInstance, toRefs } from 'vue'
+import { computed, defineComponent, getCurrentInstance, ref, toRefs,defineEmits  } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
@@ -102,6 +148,8 @@ import { useI18n } from 'vue-i18n'
 import emitter from '@/utils/mitt'
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import { Edit } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import api from '@/api/api'
 
 export default defineComponent({
   name: 'ArticleCard',
@@ -113,14 +161,67 @@ export default defineComponent({
     const userStore = useUserStore()
     const router = useRouter()
     const { t } = useI18n()
+    const dropdownRef = ref<any>()
 
     const article = toRefs(props).data
+
+    const emit = defineEmits(["initData"]);
+
 
     const editArticle = ()=>{
       router.push({
         path:"/article-edit",
         query:{articleId:article.value.id}
       })
+    }
+    const deleteArticle = ()=>{
+      ElMessageBox.confirm(
+        '删除后不可恢复,确定删除?',
+        'Warning',
+        {
+          buttonSize:'small',
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          cancelButtonClass: 'messageBoxP_cancelBtn',
+          confirmButtonClass: 'messageBoxP_confirmBtn',
+          customClass: 'persdsd',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          api.deleteArticleById(article.value.id).then(({data})=>{
+            if(data.flag) {
+              ElMessage({
+                type: 'success',
+                message: '删除成功',
+              })
+              emit("initData","");
+            }
+          })
+        })
+    }
+
+    // 更新是否置顶,是否公开,是否推荐
+    const updateArticle = () => {
+      const params = {
+        id: article.value.id,
+        isTop:article.value.isTop,
+        isFeatured:article.value.isFeatured,
+        status:article.value.status
+      }
+        api.updateArticleCardInfo(params).then(({data})=>{
+          if(data.flag) {
+            ElMessage({
+              type: 'success',
+              message: '设置成功',
+            })
+            emit("initData","");
+          }
+        })
+    }
+
+    const onShow = ()=>{
+      dropdownRef.value.handleOpen()
     }
 
     const getPopoverContent = (article:any)=>{
@@ -166,6 +267,10 @@ export default defineComponent({
       window.open(link)
     }
     const toArticle = () => {
+      if(toRefs(props).isLoginUser.value!=null&&toRefs(props).isLoginUser.value==true){
+        router.push({ path: '/articles/' + article.value.id })
+        return
+      }
       let isAccess = false
       userStore.accessArticles.forEach((item: any) => {
         if (item == props.data.id) {
@@ -199,7 +304,11 @@ export default defineComponent({
       Edit,
       getPopoverContent,
       editArticle,
-      router
+      router,
+      dropdownRef,
+      deleteArticle,
+      updateArticle,
+      onShow
     }
   }
 })
@@ -212,4 +321,26 @@ export default defineComponent({
 .article-content-main:hover {
   cursor: default;
 }
+.article-cover {
+  position: relative;
+  cursor: pointer;
+}
+.svg-info{
+  left: 88%;
+  color: #cbcb00;
+}
+</style>
+<style lang="scss">
+
+.persdsd {
+  .el-message-box__btns {
+    .messageBoxP_cancelBtn {
+      width: 150px;
+    }
+    .messageBoxP_confirmBtn {
+      width: 150px;
+    }
+  }
+}
+
 </style>

@@ -59,7 +59,7 @@ export default defineComponent({
       photoAlbumName: '' as any,
       noResult: false,
       photos: [] as any,
-      current: 1,
+      current: 0,
       size: 10,
       albumId: route.params.albumId
     })
@@ -67,7 +67,7 @@ export default defineComponent({
       reactiveData.photoAlbumName = ''
       reactiveData.photos = []
       reactiveData.noResult = false
-      reactiveData.current = 1
+      reactiveData.current = 0
       reactiveData.albumId = to.params.albumId
       loadDataFromServer()
     })
@@ -115,6 +115,8 @@ export default defineComponent({
   flex-grow: 1;
   object-fit: cover;
   height: 300px;
+  width: 400px;
+  margin-left: 30px;
 }
 .photo-wrap::after {
   content: '';

@@ -216,6 +216,7 @@ export default defineComponent({
             message: '登录成功',
             type: 'success'
           })
+          router.go(0)
           reactiveDate.loginDialogVisible = false
         }
       })
@@ -227,12 +228,12 @@ export default defineComponent({
           userStore.token = ''
           userStore.accessArticles = []
           sessionStorage.removeItem('token')
+          router.replace("/")
           proxy.$notify({
             title: 'Success',
             message: '登出成功',
             type: 'success'
           })
-          router.replace("/")
         }
       })
     }

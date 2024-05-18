@@ -1,6 +1,19 @@
 import axios from 'axios'
 import {Ref} from 'vue'
 export default {
+
+  // 更新文章卡片信息
+  updateArticleCardInfo:(data:any)=>{
+    return axios.put(`/api/articles/card`,data)
+  },
+  // 删除文章
+  deleteArticleById: (id: string) => {
+    return axios.delete(`/api/articles/`+id)
+  },
+  // 删除说说
+  deleteTalkById:(talkId: string) => {
+    return axios.delete("/api/talks/"+talkId)
+  },
   getUserForegroundInfo:(userId:any)=>{
     return axios.get("/api/users/foreground/"+userId)
   },

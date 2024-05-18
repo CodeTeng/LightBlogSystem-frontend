@@ -1,5 +1,5 @@
 <template>
-  <div class="article-container" @click="toArticle">
+  <div class="article-container" @click="toArticle" v-if="article!=null">
     <span v-if="article?.isTop" class="article-tag">
       <b>
         <svg-icon icon-class="pin" />

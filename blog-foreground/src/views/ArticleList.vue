@@ -12,7 +12,7 @@
 
           <template v-if="haveArticles === true">
             <li v-for="article in articles" :key="article.id">
-              <ArticleCard class="user-list-article" :data="article" :is-login-user="isLoginUser" :is-show="true"/>
+              <ArticleCard class="user-list-article" :data="article" :is-login-user="isLoginUser()" :is-show="true"/>
             </li>
           </template>
           <template v-else>
@@ -76,14 +76,12 @@ export default defineComponent({
       haveArticles: false
     })
     onMounted(() => {
-      // if(isLoginUser()){
-      //   reactiveData.userId = userStore.userInfo.userInfoId
-      // }else{
-      //   reactiveData.userId = route.query.userId
-      // }
       profileRef.value?.initUserInfo(reactiveData.userId)
       fetchArticles()
     })
+    const initData  =()=>{
+
+    }
     const fetchArticles = () => {
       reactiveData.haveArticles = false
       api
@@ -120,6 +118,7 @@ export default defineComponent({
       pageChangeHanlder,
       ...toRefs(reactiveData),
       isLoginUser,
+      fetchArticles,
       profileRef,
       t
     }
