@@ -168,18 +168,18 @@ export default defineComponent({
     const emit = defineEmits(["initData"]);
 
 
-    const editArticle = ()=>{
+    const editArticle = () => {
       router.push({
-        path:"/article-edit",
-        query:{articleId:article.value.id}
+        path: "/article-edit",
+        query: { articleId: article.value.id }
       })
     }
-    const deleteArticle = ()=>{
+    const deleteArticle = () => {
       ElMessageBox.confirm(
         '删除后不可恢复,确定删除?',
         'Warning',
         {
-          buttonSize:'small',
+          buttonSize: 'small',
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           cancelButtonClass: 'messageBoxP_cancelBtn',
@@ -189,13 +189,13 @@ export default defineComponent({
         }
       )
         .then(() => {
-          api.deleteArticleById(article.value.id).then(({data})=>{
-            if(data.flag) {
+          api.deleteArticleById(article.value.id).then(({ data }) => {
+            if (data.flag) {
               ElMessage({
                 type: 'success',
                 message: '删除成功',
               })
-              emit("initData","");
+              emit("initData", "");
             }
           })
         })
@@ -205,32 +205,32 @@ export default defineComponent({
     const updateArticle = () => {
       const params = {
         id: article.value.id,
-        isTop:article.value.isTop,
-        isFeatured:article.value.isFeatured,
-        status:article.value.status
+        isTop: article.value.isTop,
+        isFeatured: article.value.isFeatured,
+        status: article.value.status
       }
-        api.updateArticleCardInfo(params).then(({data})=>{
-          if(data.flag) {
-            ElMessage({
-              type: 'success',
-              message: '设置成功',
-            })
-            emit("initData","");
-          }
-        })
+      api.updateArticleCardInfo(params).then(({ data }) => {
+        if (data.flag) {
+          ElMessage({
+            type: 'success',
+            message: '设置成功',
+          })
+          emit("initData", "");
+        }
+      })
     }
 
-    const onShow = ()=>{
+    const onShow = () => {
       dropdownRef.value.handleOpen()
     }
 
-    const getPopoverContent = (article:any)=>{
+    const getPopoverContent = (article: any) => {
       const content = {
-        statusStr:'',
-        typeStr:'',
-        reviewStr:''
+        statusStr: '',
+        typeStr: '',
+        reviewStr: ''
       }
-      switch(article.status){
+      switch (article.status) {
         case 1:
           content.statusStr = '公开'
           break
@@ -241,7 +241,7 @@ export default defineComponent({
           content.statusStr = '草稿'
           break
       }
-      switch(article.type){
+      switch (article.type) {
         case 1:
           content.typeStr = '原创'
           break
@@ -252,7 +252,7 @@ export default defineComponent({
           content.typeStr = '翻译'
           break
       }
-      switch(article.review){
+      switch (article.review) {
         case 0:
           content.reviewStr = '未审核'
           break
@@ -267,30 +267,38 @@ export default defineComponent({
       window.open(link)
     }
     const toArticle = () => {
-      if(toRefs(props).isLoginUser.value!=null&&toRefs(props).isLoginUser.value==true){
+      // 如果用户已经登录且加密文章是自己的文章，可直接查看
+      if (userStore.userInfo.userInfoId==article.value.author.id) {
         router.push({ path: '/articles/' + article.value.id })
         return
       }
-      let isAccess = false
-      userStore.accessArticles.forEach((item: any) => {
-        if (item == props.data.id) {
-          isAccess = true
-        }
-      })
-      if (props.data.status === 2 && isAccess == false) {
+
+      // 文章需要密码认证
+      if (article.value.status == 2) {
+
         if (userStore.userInfo === '') {
+          // 用户未登录
           proxy.$notify({
             title: 'Warning',
             message: '该文章受密码保护,请登录后访问',
             type: 'warning'
           })
-        } else {
+        } else{
+          // 判断文章是否认证过
+          for (let accessArticleId of userStore.accessArticles) {
+            if(accessArticleId == article.value.id){
+              router.push({ path: '/articles/' + article.value.id })
+              return
+            }
+          }
+          // 用户已经登录，弹窗输入密码
           emitter.emit('changeArticlePasswordDialogVisible', props.data.id)
         }
-      } else {
-        router.push({ path: '/articles/' + props.data.id })
+        return
       }
+      router.push({ path: '/articles/' + article.value.id })
     }
+
     return {
       gradientBackground: computed(() => {
         return { background: appStore.themeConfig.header_gradient_css }
